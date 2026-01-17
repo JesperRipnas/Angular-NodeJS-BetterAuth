@@ -1,9 +1,10 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable, tap, catchError, finalize } from 'rxjs';
 import { AuthUser } from '../../auth/models/auth-user.model';
 import { AuthCookie } from '../../auth/models/auth-cookie.model';
 import { environment } from '../../../environments/environment';
+import { AUTH_CREDENTIALS } from '../interceptors/auth.interceptor';
 
 interface LoginRequest {
   username: string;
@@ -82,14 +83,10 @@ export class AuthService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const credentials = `${loginRequest.username}:${loginRequest.password}`;
-    const encodedCredentials = btoa(credentials);
-    const headers = {
-      Authorization: `Basic ${encodedCredentials}`,
-    };
+    const context = new HttpContext().set(AUTH_CREDENTIALS, loginRequest);
 
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/login`, {}, { headers })
+      .post<LoginResponse>(`${this.API_URL}/login`, {}, { context })
       .pipe(
         tap((response) => {
           if (response.success && response.user) {
@@ -111,14 +108,11 @@ export class AuthService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    // Create Basic Auth header for password: "Basic base64(username:password)"
-    const credentials = `${signupRequest.username}:${signupRequest.password}`;
-    const encodedCredentials = btoa(credentials);
-    const headers = {
-      Authorization: `Basic ${encodedCredentials}`,
-    };
+    const context = new HttpContext().set(AUTH_CREDENTIALS, {
+      username: signupRequest.username,
+      password: signupRequest.password,
+    });
 
-    // Send other signup data in body (without password)
     const signupData = {
       firstName: signupRequest.firstName,
       lastName: signupRequest.lastName,
@@ -128,7 +122,7 @@ export class AuthService {
     };
 
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/signup`, signupData, { headers })
+      .post<LoginResponse>(`${this.API_URL}/signup`, signupData, { context })
       .pipe(
         tap((response) => {
           if (response.success && response.user) {
