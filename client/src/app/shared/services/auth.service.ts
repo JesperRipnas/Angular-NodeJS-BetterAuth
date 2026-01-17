@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, finalize } from 'rxjs';
 import { AuthUser } from '../../auth/models/auth-user.model';
 import { AuthCookie } from '../../auth/models/auth-cookie.model';
+import { environment } from '../../../environments/environment';
 
 interface LoginRequest {
   username: string;
@@ -29,7 +30,7 @@ export class AuthService {
   private readonly COOKIE_NAME = 'auth_session';
   private readonly SESSION_DURATION = 60 * 60 * 1000; // 60 minutes in milliseconds
   private readonly CONSENT_KEY = 'cookie_consent';
-  private readonly API_URL = 'http://localhost:3000/auth';
+  private readonly API_URL = `${environment.apiUrl}/auth`;
 
   private readonly http = inject(HttpClient);
 
