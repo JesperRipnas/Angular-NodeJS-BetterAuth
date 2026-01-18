@@ -13,5 +13,5 @@ import { AuthUser } from '../auth/models/auth-user.model';
 })
 export class DashboardComponent {
   private authService = inject(AuthService);
-  user: AuthUser | null = this.authService.user();
+  user: AuthUser | null = this.authService.getUser();
 }

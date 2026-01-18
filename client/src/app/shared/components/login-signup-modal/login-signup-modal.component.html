@@ -8,59 +8,59 @@
     <div class="modal-body">
       <form (ngSubmit)="onSubmit()">
         @if (isSignupMode()) {
-        <div class="form-row">
-          <div class="form-group">
-            <input
-              type="text"
-              id="firstName"
-              [placeholder]="'auth.signup.firstNamePlaceholder' | translate"
-              [(ngModel)]="firstName"
-              name="firstName"
-            />
+          <div class="form-row">
+            <div class="form-group">
+              <input
+                type="text"
+                id="firstName"
+                [placeholder]="'auth.signup.firstNamePlaceholder' | translate"
+                [(ngModel)]="firstName"
+                name="firstName"
+              />
+            </div>
+
+            <div class="form-group">
+              <input
+                type="text"
+                id="lastName"
+                [placeholder]="'auth.signup.lastNamePlaceholder' | translate"
+                [(ngModel)]="lastName"
+                name="lastName"
+              />
+            </div>
           </div>
 
-          <div class="form-group">
-            <input
-              type="text"
-              id="lastName"
-              [placeholder]="'auth.signup.lastNamePlaceholder' | translate"
-              [(ngModel)]="lastName"
-              name="lastName"
-            />
-          </div>
-        </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input
+                type="text"
+                id="username"
+                [placeholder]="'auth.signup.usernamePlaceholder' | translate"
+                [(ngModel)]="username"
+                name="username"
+              />
+            </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <input
-              type="text"
-              id="username"
-              [placeholder]="'auth.signup.usernamePlaceholder' | translate"
-              [(ngModel)]="username"
-              name="username"
-            />
+            <div class="form-group">
+              <select id="gender" [(ngModel)]="gender" name="gender">
+                <option value="" disabled selected hidden>
+                  {{ 'auth.signup.genderPlaceholder' | translate }}
+                </option>
+                <option value="male">
+                  {{ 'auth.signup.genderMale' | translate }}
+                </option>
+                <option value="female">
+                  {{ 'auth.signup.genderFemale' | translate }}
+                </option>
+                <option value="other">
+                  {{ 'auth.signup.genderOther' | translate }}
+                </option>
+                <option value="prefer-not-to-say">
+                  {{ 'auth.signup.genderPreferNotToSay' | translate }}
+                </option>
+              </select>
+            </div>
           </div>
-
-          <div class="form-group">
-            <select id="gender" [(ngModel)]="gender" name="gender">
-              <option value="" disabled selected hidden>
-                {{ "auth.signup.genderPlaceholder" | translate }}
-              </option>
-              <option value="male">
-                {{ "auth.signup.genderMale" | translate }}
-              </option>
-              <option value="female">
-                {{ "auth.signup.genderFemale" | translate }}
-              </option>
-              <option value="other">
-                {{ "auth.signup.genderOther" | translate }}
-              </option>
-              <option value="prefer-not-to-say">
-                {{ "auth.signup.genderPreferNotToSay" | translate }}
-              </option>
-            </select>
-          </div>
-        </div>
         }
 
         <div class="form-group">
@@ -79,7 +79,7 @@
             [class.error]="emailError()"
           />
           @if (emailError()) {
-          <span class="error-message">{{ emailError() | translate }}</span>
+            <span class="error-message">{{ emailError() | translate }}</span>
           }
         </div>
 
@@ -99,26 +99,29 @@
         </div>
 
         @if (isSignupMode()) {
-        <div class="form-group">
-          <input
-            type="password"
-            id="confirmPassword"
-            [placeholder]="'auth.signup.confirmPasswordPlaceholder' | translate"
-            [(ngModel)]="confirmPassword"
-            name="confirmPassword"
-            [class.error]="!passwordsMatch()"
-          />
-          @if (!passwordsMatch()) {
-          <span class="error-message">{{
-            "auth.signup.passwordsDoNotMatch" | translate
-          }}</span>
-          }
-        </div>
-        } @if (isLoginMode() && loginError()) {
-        <app-error-alert
-          [message]="loginError()"
-          type="error"
-        ></app-error-alert>
+          <div class="form-group">
+            <input
+              type="password"
+              id="confirmPassword"
+              [placeholder]="
+                'auth.signup.confirmPasswordPlaceholder' | translate
+              "
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              [class.error]="!passwordsMatch()"
+            />
+            @if (!passwordsMatch()) {
+              <span class="error-message">{{
+                'auth.signup.passwordsDoNotMatch' | translate
+              }}</span>
+            }
+          </div>
+        }
+        @if (isLoginMode() && loginError()) {
+          <app-error-alert
+            [message]="loginError()"
+            type="error"
+          ></app-error-alert>
         }
 
         <button
@@ -127,26 +130,26 @@
           [disabled]="!isFormValid() || isLoading()"
         >
           @if (isLoading()) {
-          <span class="spinner"></span>
+            <span class="spinner"></span>
           }
           {{ submitButtonText() }}
         </button>
 
         @if (isLoginMode()) {
-        <button type="button" class="signup-btn" (click)="switchMode()">
-          {{ "auth.login.noAccountText" | translate }}
-        </button>
-        } @else {
-        <div class="login-link">
-          {{ "auth.signup.haveAccountText" | translate }}
-          <button type="button" class="link-btn" (click)="switchMode()">
-            {{ "auth.signup.loginLink" | translate }}
+          <button type="button" class="signup-btn" (click)="switchMode()">
+            {{ 'auth.login.noAccountText' | translate }}
           </button>
-        </div>
+        } @else {
+          <div class="login-link">
+            {{ 'auth.signup.haveAccountText' | translate }}
+            <button type="button" class="link-btn" (click)="switchMode()">
+              {{ 'auth.signup.loginLink' | translate }}
+            </button>
+          </div>
         }
       </form>
 
-      <div class="divider">{{ "auth.orContinueWith" | translate }}</div>
+      <div class="divider">{{ 'auth.orContinueWith' | translate }}</div>
 
       <div class="oauth-buttons">
         <button class="oauth-btn google-btn" (click)="loginWithGoogle()">

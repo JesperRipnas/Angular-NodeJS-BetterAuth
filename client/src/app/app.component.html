@@ -11,10 +11,10 @@
 </main>
 
 @if (showAuthModal()) {
-<app-login-signup-modal
-  [initialMode]="'login'"
-  (closeModal)="showAuthModal.set(false)"
-></app-login-signup-modal>
+  <app-login-signup-modal
+    [initialMode]="'login'"
+    (closeModal)="showAuthModal.set(false)"
+  ></app-login-signup-modal>
 }
 
 <app-cookie-consent></app-cookie-consent>

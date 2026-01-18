@@ -18,7 +18,7 @@ import { AuthService } from '../shared/services/auth.service';
 })
 export class ProfileComponent {
   private readonly authService = inject(AuthService);
-  private readonly user = computed(() => this.authService.user());
+  private readonly user = computed(() => this.authService.getUser());
 
   username = computed(() => this.user()?.username ?? '—');
   email = computed(() => this.user()?.email ?? '—');

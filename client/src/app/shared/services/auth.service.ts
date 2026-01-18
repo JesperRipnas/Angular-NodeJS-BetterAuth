@@ -58,7 +58,7 @@ export class AuthService {
     }
   }
 
-  user(): AuthUser | null {
+  getUser(): AuthUser | null {
     return this._user();
   }
 

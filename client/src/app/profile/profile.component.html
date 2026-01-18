@@ -1,36 +1,36 @@
 <section class="profile">
-  <h1 class="title">{{ "profile.title" | translate }}</h1>
-  <p class="subtitle">{{ "profile.subtitle" | translate }}</p>
+  <h1 class="title">{{ 'profile.title' | translate }}</h1>
+  <p class="subtitle">{{ 'profile.subtitle' | translate }}</p>
 
   <div class="card">
     <div class="field">
-      <span class="label">{{ "profile.firstName" | translate }}</span>
+      <span class="label">{{ 'profile.firstName' | translate }}</span>
       <span class="value">{{ firstName() }}</span>
     </div>
     <div class="field">
-      <span class="label">{{ "profile.lastName" | translate }}</span>
+      <span class="label">{{ 'profile.lastName' | translate }}</span>
       <span class="value">{{ lastName() }}</span>
     </div>
     <div class="field">
-      <span class="label">{{ "profile.username" | translate }}</span>
+      <span class="label">{{ 'profile.username' | translate }}</span>
       <span class="value">{{ username() }}</span>
     </div>
     <div class="field">
-      <span class="label">{{ "profile.email" | translate }}</span>
+      <span class="label">{{ 'profile.email' | translate }}</span>
       <span class="value">{{ email() }}</span>
     </div>
     <div class="field">
-      <span class="label">{{ "profile.verifiedEmail" | translate }}</span>
+      <span class="label">{{ 'profile.verifiedEmail' | translate }}</span>
       <span class="value">
         @if (verifiedEmail()) {
-        {{ "shared.yes" | translate }}
+          {{ 'shared.yes' | translate }}
         } @else {
-        {{ "shared.no" | translate }}
+          {{ 'shared.no' | translate }}
         }
       </span>
     </div>
     <div class="field">
-      <span class="label">{{ "profile.birthDate" | translate }}</span>
+      <span class="label">{{ 'profile.birthDate' | translate }}</span>
       <span class="value">{{ birthDate() }}</span>
     </div>
   </div>

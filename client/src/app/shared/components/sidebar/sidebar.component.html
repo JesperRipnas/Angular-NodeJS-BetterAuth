@@ -30,22 +30,22 @@
 
   <nav class="sidebar-nav">
     @for (section of menuSections(); track section.title) {
-    <div class="menu-section">
-      <div class="section-title">{{ section.title }}</div>
-      @for (item of section.items; track item.label) {
-      <button
-        type="button"
-        class="nav-item"
-        (click)="handleItemClick(item)"
-        [title]="item.translate ? (item.label | translate) : item.label"
-      >
-        <span class="nav-icon">{{ item.icon }}</span>
-        <span class="nav-label">{{
-          item.translate ? (item.label | translate) : item.label
-        }}</span>
-      </button>
-      }
-    </div>
+      <div class="menu-section">
+        <div class="section-title">{{ section.title }}</div>
+        @for (item of section.items; track item.label) {
+          <button
+            type="button"
+            class="nav-item"
+            (click)="handleItemClick(item)"
+            [title]="item.translate ? (item.label | translate) : item.label"
+          >
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label">{{
+              item.translate ? (item.label | translate) : item.label
+            }}</span>
+          </button>
+        }
+      </div>
     }
   </nav>
 
