@@ -10,8 +10,8 @@ describe('ProfileComponent', () => {
   let mockTranslationService: jasmine.SpyObj<TranslationService>;
 
   beforeEach(async () => {
-    mockAuthService = jasmine.createSpyObj('AuthService', ['user']);
-    mockAuthService.user = jasmine.createSpy('user').and.returnValue({
+    mockAuthService = jasmine.createSpyObj('AuthService', ['getUser']);
+    mockAuthService.getUser = jasmine.createSpy('getUser').and.returnValue({
       username: 'testuser',
       email: 'test@example.com',
     });
