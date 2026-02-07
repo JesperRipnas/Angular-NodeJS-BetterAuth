@@ -1,7 +1,12 @@
-# compiled output
 /dist
 /node_modules
 /build
+**/dist
+**/node_modules
+**/build
+/tmp
+/out-tsc
+/bazel-out
 
 # Logs
 logs
@@ -14,10 +19,28 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Angular
+/.angular/cache
+**/.angular/cache
+**/.angular/cache/**
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+
+# NestJS
+**/coverage
 
 # Tests
 /coverage
 /.nyc_output
+**/coverage
+api/coverage/
+client/test-results/
+client/playwright-report/
 
 # IDEs and editors
 /.idea
@@ -34,6 +57,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.history/*
 
 # dotenv environment variable files
 .env
@@ -60,6 +84,7 @@ config/secrets.*
 *.sqlite
 *.sqlite3
 *.db
+database.json
 
 # Session storage
 sessions/
