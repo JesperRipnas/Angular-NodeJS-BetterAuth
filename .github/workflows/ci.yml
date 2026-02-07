@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: ['**']
   pull_request:
-    branches: ["**"]
+    branches: ['**']
 
 jobs:
   # ============================================================================
@@ -12,7 +12,7 @@ jobs:
   # ============================================================================
 
   api-install:
-    name: "[API] Install Dependencies"
+    name: '[API] Install Dependencies'
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: api/package-lock.json
 
       - name: Install dependencies
@@ -29,7 +29,7 @@ jobs:
         run: npm ci
 
   api-build:
-    name: "[API] Build Project"
+    name: '[API] Build Project'
     needs: api-install
     runs-on: ubuntu-latest
 
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: api/package-lock.json
 
       - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
         run: npm run build
 
   api-lint:
-    name: "[API] Lint Code"
+    name: '[API] Lint Code'
     needs: api-build
     runs-on: ubuntu-latest
 
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: api/package-lock.json
 
       - name: Install dependencies
@@ -73,7 +73,7 @@ jobs:
         run: npm run lint
 
   api-test:
-    name: "[API] Run Tests"
+    name: '[API] Run Tests'
     needs: api-lint
     runs-on: ubuntu-latest
 
@@ -83,7 +83,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: api/package-lock.json
 
       - name: Install dependencies
@@ -106,7 +106,7 @@ jobs:
   # ============================================================================
 
   client-install:
-    name: "[Client] Install Dependencies"
+    name: '[Client] Install Dependencies'
     runs-on: ubuntu-latest
 
     steps:
@@ -115,7 +115,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
@@ -123,7 +123,7 @@ jobs:
         run: npm ci
 
   client-build:
-    name: "[Client] Build Project"
+    name: '[Client] Build Project'
     needs: client-install
     runs-on: ubuntu-latest
 
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
@@ -145,7 +145,7 @@ jobs:
         run: npm run build
 
   client-lint:
-    name: "[Client] Lint Code"
+    name: '[Client] Lint Code'
     needs: client-build
     runs-on: ubuntu-latest
 
@@ -155,7 +155,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
@@ -167,7 +167,7 @@ jobs:
         run: npm run lint
 
   client-test:
-    name: "[Client] Run Tests"
+    name: '[Client] Run Tests'
     needs: client-lint
     runs-on: ubuntu-latest
 
@@ -177,7 +177,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
@@ -194,3 +194,51 @@ jobs:
         with:
           name: client-coverage-report
           path: client/coverage/
+
+  client-e2e:
+    name: '[Client] Run E2E Tests'
+    needs: client-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: |
+            api/package-lock.json
+            client/package-lock.json
+
+      - name: Install API dependencies
+        working-directory: api
+        run: npm ci
+
+      - name: Install Client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: client
+        run: npx playwright install --with-deps chromium
+
+      - name: Start API
+        run: npm --prefix api run start &
+
+      - name: Start Client
+        run: npm --prefix client run start &
+
+      - name: Wait for services
+        run: npx wait-on -t 60000 http://localhost:3000 http://localhost:4200
+
+      - name: Run E2E tests
+        working-directory: client
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-playwright-report
+          path: client/playwright-report/
