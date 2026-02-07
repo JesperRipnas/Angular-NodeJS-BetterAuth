@@ -77,11 +77,56 @@ export const en: Translation = {
     groups: 'Groups',
     reports: 'Reports',
     settings: 'Settings',
+    users: 'Users',
   },
   cookies: {
     message:
       'We use cookies to maintain your session. Please accept to continue.',
     accept: 'Accept',
     decline: 'Decline',
+  },
+  admin: {
+    title: 'Admin Panel',
+    users: {
+      title: 'User Management',
+      subtitle: 'Manage your users and their roles',
+      noUsers: 'No users found',
+      table: {
+        username: 'Username',
+        email: 'Email',
+        name: 'Name',
+        role: 'Role',
+        actions: 'Actions',
+      },
+      buttons: {
+        edit: 'Edit',
+        delete: 'Delete',
+        deleteConfirm: 'Confirm Delete',
+        save: 'Save Changes',
+        cancel: 'Cancel',
+      },
+      modal: {
+        editTitle: 'Edit User',
+        firstName: 'First Name',
+        lastName: 'Last Name',
+        email: 'Email',
+        birthDate: 'Birth Date',
+        role: 'Role',
+        lastAdminWarning: 'Cannot change role of the last admin',
+      },
+      messages: {
+        deleteSuccess: 'User deleted successfully',
+        deleteError: 'Failed to delete user',
+        saveSuccess: 'User updated successfully',
+        saveError: 'Failed to update user',
+        lastAdminDeleteProtection: 'Cannot delete the last admin account',
+        confirmDelete: 'Are you sure you want to delete this user?',
+      },
+      roles: {
+        user: 'User',
+        admin: 'Admin',
+        seller: 'Seller',
+      },
+    },
   },
 };

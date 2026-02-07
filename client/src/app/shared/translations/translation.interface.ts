@@ -75,10 +75,55 @@ export interface Translation {
     groups: string;
     reports: string;
     settings: string;
+    users: string;
   };
   cookies: {
     message: string;
     accept: string;
     decline: string;
+  };
+  admin: {
+    title: string;
+    users: {
+      title: string;
+      subtitle: string;
+      noUsers: string;
+      table: {
+        username: string;
+        email: string;
+        name: string;
+        role: string;
+        actions: string;
+      };
+      buttons: {
+        edit: string;
+        delete: string;
+        deleteConfirm: string;
+        save: string;
+        cancel: string;
+      };
+      modal: {
+        editTitle: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        birthDate: string;
+        role: string;
+        lastAdminWarning: string;
+      };
+      messages: {
+        deleteSuccess: string;
+        deleteError: string;
+        saveSuccess: string;
+        saveError: string;
+        lastAdminDeleteProtection: string;
+        confirmDelete: string;
+      };
+      roles: {
+        user: string;
+        admin: string;
+        seller: string;
+      };
+    };
   };
 }

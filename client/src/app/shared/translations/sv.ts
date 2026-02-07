@@ -77,11 +77,57 @@ export const sv: Translation = {
     groups: 'Grupper',
     reports: 'Rapporter',
     settings: 'Inställningar',
+    users: 'Användare',
   },
   cookies: {
     message:
       'Vi använder cookies för att upprätthålla din session. Vänligen acceptera för att fortsätta.',
     accept: 'Acceptera',
     decline: 'Avslå',
+  },
+  admin: {
+    title: 'Administratörsöversikt',
+    users: {
+      title: 'Användarhantering',
+      subtitle: 'Hantera dina användare och deras roller',
+      noUsers: 'Inga användare hittades',
+      table: {
+        username: 'Användarnamn',
+        email: 'E-post',
+        name: 'Namn',
+        role: 'Roll',
+        actions: 'Åtgärder',
+      },
+      buttons: {
+        edit: 'Redigera',
+        delete: 'Radera',
+        deleteConfirm: 'Bekräfta radering',
+        save: 'Spara ändringar',
+        cancel: 'Avbryt',
+      },
+      modal: {
+        editTitle: 'Redigera användare',
+        firstName: 'Förnamn',
+        lastName: 'Efternamn',
+        email: 'E-post',
+        birthDate: 'Födelsedatum',
+        role: 'Roll',
+        lastAdminWarning: 'Kan inte ändra roll för den sista administratören',
+      },
+      messages: {
+        deleteSuccess: 'Användaren raderades framgångsrikt',
+        deleteError: 'Det gick inte att radera användaren',
+        saveSuccess: 'Användaren uppdaterades framgångsrikt',
+        saveError: 'Det gick inte att uppdatera användaren',
+        lastAdminDeleteProtection:
+          'Kan inte radera det senaste administratörskontot',
+        confirmDelete: 'Är du säker på att du vill radera denna användare?',
+      },
+      roles: {
+        user: 'Användare',
+        admin: 'Administratör',
+        seller: 'Säljare',
+      },
+    },
   },
 };
