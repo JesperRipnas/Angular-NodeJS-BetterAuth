@@ -5,13 +5,6 @@ on:
     branches: ['**']
   pull_request:
     branches: ['**']
-  workflow_dispatch:
-    inputs:
-      run_client_e2e:
-        description: 'Run client e2e tests'
-        type: boolean
-        required: false
-        default: false
 
 jobs:
   # ============================================================================
@@ -197,7 +190,6 @@ jobs:
 
   client-e2e:
     name: 'Run E2E Tests'
-    if: github.ref == 'refs/heads/master' || (github.event_name == 'pull_request' && github.base_ref == 'master') || (github.event_name == 'workflow_dispatch' && inputs.run_client_e2e)
     needs: [api-test, client-test]
     runs-on: ubuntu-latest
 
@@ -227,11 +219,11 @@ jobs:
       - name: Start API
         env:
           ENABLE_HTTP_LOGS: false
-          DATABASE_HOST: ${{ vars.DATABASE_HOST }}
-          DATABASE_PORT: ${{ vars.DATABASE_PORT }}
-          DATABASE_USER: ${{ vars.DATABASE_USER }}
-          DATABASE_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
-          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
         run: |
           npm --prefix api run start &
           echo $! > api.pid
