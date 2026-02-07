@@ -1,0 +1,126 @@
+<div
+  class="modal-overlay"
+  (click)="onClose()"
+  (keyup.escape)="onClose()"
+  role="presentation"
+>
+  <div
+    class="modal-content"
+    (click)="$event.stopPropagation()"
+    (keyup.escape)="$event.stopPropagation()"
+    role="dialog"
+  >
+    <div class="modal-header">
+      <h2>{{ translation.translate('admin.users.modal.editTitle') }}</h2>
+      <button class="close-btn" (click)="onClose()" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    @if (formData() && user()) {
+      <form class="modal-form">
+        <div class="form-group">
+          <label for="username">{{
+            translation.translate('admin.users.table.username')
+          }}</label>
+          <input
+            type="text"
+            id="username"
+            disabled
+            [value]="formData()?.username"
+            class="disabled-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="firstName">{{
+            translation.translate('admin.users.modal.firstName')
+          }}</label>
+          <input
+            type="text"
+            id="firstName"
+            [value]="formData()?.firstName ?? ''"
+            (change)="updateField('firstName', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">{{
+            translation.translate('admin.users.modal.lastName')
+          }}</label>
+          <input
+            type="text"
+            id="lastName"
+            [value]="formData()?.lastName ?? ''"
+            (change)="updateField('lastName', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">{{
+            translation.translate('admin.users.table.email')
+          }}</label>
+          <input
+            type="email"
+            id="email"
+            [value]="formData()?.email ?? ''"
+            (change)="updateField('email', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="birthDate">{{
+            translation.translate('admin.users.modal.birthDate')
+          }}</label>
+          <input
+            type="date"
+            id="birthDate"
+            [value]="formData()?.birthDate ?? ''"
+            (change)="updateField('birthDate', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="role">{{
+            translation.translate('admin.users.table.role')
+          }}</label>
+          <select
+            id="role"
+            [value]="formData()?.role ?? ''"
+            [disabled]="isLastAdmin()"
+            [title]="
+              isLastAdmin()
+                ? translation.translate('admin.users.modal.lastAdminWarning')
+                : ''
+            "
+            (change)="onRoleChange($any($event.target).value)"
+          >
+            <option value="user">
+              {{ translation.translate('admin.users.roles.user') }}
+            </option>
+            <option value="admin">
+              {{ translation.translate('admin.users.roles.admin') }}
+            </option>
+            <option value="seller">
+              {{ translation.translate('admin.users.roles.seller') }}
+            </option>
+          </select>
+          @if (isLastAdmin()) {
+            <p class="text-yellow-600 text-sm mt-1">
+              {{ translation.translate('admin.users.modal.lastAdminWarning') }}
+            </p>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="onClose()">
+            {{ translation.translate('admin.users.buttons.cancel') }}
+          </button>
+          <button type="button" class="btn btn-save" (click)="onSave()">
+            {{ translation.translate('admin.users.buttons.save') }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

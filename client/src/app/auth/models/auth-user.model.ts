@@ -1,3 +1,5 @@
+import { Role } from './role.enum';
+
 export interface AuthUser {
   username: string;
   email: string;
@@ -5,4 +7,5 @@ export interface AuthUser {
   lastName: string;
   birthDate: string;
   verifiedEmail: boolean;
+  role: Role;
 }

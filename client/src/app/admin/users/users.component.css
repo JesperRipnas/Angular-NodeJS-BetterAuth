@@ -1,0 +1,187 @@
+.users-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+:host-context(.dark) .title {
+  color: #ffffff;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+:host-context(.dark) .error-message {
+  background: #4a2424;
+  color: #ffb3b3;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+:host-context(.dark) .loading {
+  color: #aaa;
+}
+
+.users-table {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+:host-context(.dark) .users-table {
+  border-color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+:host-context(.dark) table {
+  background: #1f2937;
+}
+
+thead {
+  background: #f5f5f5;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+:host-context(.dark) thead {
+  background: #2d3748;
+  border-bottom-color: #444;
+}
+
+th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.875rem;
+}
+
+:host-context(.dark) th {
+  color: #e2e8f0;
+}
+
+td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  color: #666;
+}
+
+:host-context(.dark) td {
+  border-bottom-color: #333;
+  color: #cbd5e1;
+}
+
+tbody tr:hover {
+  background: #f9f9f9;
+}
+
+:host-context(.dark) tbody tr:hover {
+  background: #2d3748;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-user {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+:host-context(.dark) .role-user {
+  background: #1e3a5f;
+  color: #60a5fa;
+}
+
+.role-admin {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+:host-context(.dark) .role-admin {
+  background: #5f1e3e;
+  color: #f472b6;
+}
+
+.role-seller {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+:host-context(.dark) .role-seller {
+  background: #4a1d6f;
+  color: #d8b4fe;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-edit {
+  background: #2196f3;
+  color: #ffffff;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.btn-delete {
+  background: #f44336;
+  color: #ffffff;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #da190b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.no-users {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+}
+
+:host-context(.dark) .no-users {
+  color: #666;
+}

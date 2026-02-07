@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
@@ -11,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs/operators';
+import { Role } from '../../../auth/models/role.enum';
 
 interface MenuItem {
   label: string;
@@ -49,19 +49,45 @@ export class SidebarComponent {
     return url !== '/' && url !== '/home';
   });
 
-  menuSections = signal<MenuSection[]>([
-    {
-      title: '',
-      items: [
-        {
-          label: 'sidebar.dashboard',
-          icon: '📊',
-          translate: true,
-          route: '/dashboard',
-        },
-      ],
-    },
-  ]);
+  readonly userRole = computed(() => {
+    const user = this.authService.getUserSignal()();
+    return user?.role;
+  });
+
+  menuSections = computed<MenuSection[]>(() => {
+    const role = this.userRole();
+
+    const baseSections: MenuSection[] = [
+      {
+        title: '',
+        items: [
+          {
+            label: 'sidebar.dashboard',
+            icon: '📊',
+            translate: true,
+            route: '/dashboard',
+          },
+        ],
+      },
+    ];
+
+    // Add admin section if user is admin
+    if (role === Role.ADMIN) {
+      baseSections.push({
+        title: 'Admin',
+        items: [
+          {
+            label: 'sidebar.users',
+            icon: '👥',
+            translate: true,
+            route: '/admin/users',
+          },
+        ],
+      });
+    }
+
+    return baseSections;
+  });
 
   logoutItem: MenuItem = {
     label: 'shared.logout',

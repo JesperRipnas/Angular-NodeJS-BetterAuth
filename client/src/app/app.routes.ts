@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth.guard';
+import { roleGuard } from './shared/guards/role.guard';
+import { Role } from './auth/models/role.enum';
 
 export const appRoutes: Routes = [
   {
@@ -20,6 +22,12 @@ export const appRoutes: Routes = [
     loadComponent: () =>
       import('./profile/profile.component').then((m) => m.ProfileComponent),
     canActivate: [authGuard],
+  },
+  {
+    path: 'admin/users',
+    loadComponent: () =>
+      import('./admin/users/users.component').then((m) => m.UsersComponent),
+    canActivate: [roleGuard([Role.ADMIN])],
   },
   { path: '**', redirectTo: '' },
 ];

@@ -62,6 +62,10 @@ export class AuthService {
     return this._user();
   }
 
+  getUserSignal() {
+    return this._user;
+  }
+
   setUser(user: AuthUser): void {
     this._user.set(user);
     this.saveToCookie();

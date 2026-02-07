@@ -6,6 +6,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { CommonModule } from './common/common.module';
       }),
     }),
     AuthModule,
+    UsersModule,
     CommonModule,
   ],
   controllers: [AuthController],
