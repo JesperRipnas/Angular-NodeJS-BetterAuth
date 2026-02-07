@@ -197,7 +197,7 @@ jobs:
 
   client-e2e:
     name: '[Client] Run E2E Tests'
-    needs: client-test
+    needs: [api-test, client-test]
     runs-on: ubuntu-latest
 
     steps:
