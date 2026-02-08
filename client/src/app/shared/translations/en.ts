@@ -90,11 +90,27 @@ export const en: Translation = {
     users: {
       title: 'User Management',
       subtitle: 'Manage your users and their roles',
+      filters: {
+        show: 'Show filters',
+        hide: 'Hide filters',
+      },
+      search: {
+        label: 'Search users',
+        placeholder: 'Search by username or email',
+        help: 'Type to filter the list by username or email.',
+        noResults: 'No users match your search.',
+        roleLabel: 'Filter by role',
+        allRoles: 'All roles',
+        verificationLabel: 'Filter by verification',
+        verified: 'Verified',
+        unverified: 'Not verified',
+      },
       noUsers: 'No users found',
       table: {
         username: 'Username',
         email: 'Email',
         name: 'Name',
+        verifiedEmail: 'Verified email',
         role: 'Role',
         actions: 'Actions',
       },

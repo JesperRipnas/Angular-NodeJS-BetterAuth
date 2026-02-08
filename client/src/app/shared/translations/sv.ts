@@ -90,11 +90,27 @@ export const sv: Translation = {
     users: {
       title: 'Användarhantering',
       subtitle: 'Hantera dina användare och deras roller',
+      filters: {
+        show: 'Visa filter',
+        hide: 'Dölj filter',
+      },
+      search: {
+        label: 'Sök användare',
+        placeholder: 'Sök på användarnamn eller e-post',
+        help: 'Skriv för att filtrera listan på användarnamn eller e-post.',
+        noResults: 'Inga användare matchar din sökning.',
+        roleLabel: 'Filtrera på roll',
+        allRoles: 'Alla roller',
+        verificationLabel: 'Filtrera på verifiering',
+        verified: 'Verifierad',
+        unverified: 'Ej verifierad',
+      },
       noUsers: 'Inga användare hittades',
       table: {
         username: 'Användarnamn',
         email: 'E-post',
         name: 'Namn',
+        verifiedEmail: 'Verifierad e-post',
         role: 'Roll',
         actions: 'Åtgärder',
       },

@@ -1,6 +1,103 @@
 <section class="users-container">
-  <h1 class="title">{{ translation.translate('admin.users.title') }}</h1>
-  <p class="subtitle">{{ translation.translate('admin.users.subtitle') }}</p>
+  <div class="users-header">
+    <div>
+      <h1 class="title">{{ translation.translate('admin.users.title') }}</h1>
+      <p class="subtitle">
+        {{ translation.translate('admin.users.subtitle') }}
+      </p>
+    </div>
+  </div>
+
+  <div class="filters-card" aria-label="User filters">
+    <div class="search-row" role="search">
+      <label class="search-label" for="user-search">
+        {{ translation.translate('admin.users.search.label') }}
+      </label>
+      <div class="search-controls">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M15.5 14h-.79l-.28-.27a6 6 0 10-.71.71l.27.28v.79l4.25 4.25 1.27-1.27L15.5 14zm-5.5 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"
+            />
+          </svg>
+          <input
+            id="user-search"
+            class="search-input"
+            type="search"
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+            [placeholder]="
+              translation.translate('admin.users.search.placeholder')
+            "
+            [attr.aria-describedby]="'user-search-help'"
+          />
+        </div>
+        <button
+          class="btn btn-filter-toggle"
+          type="button"
+          (click)="toggleFilters()"
+        >
+          {{
+            showFilters()
+              ? translation.translate('admin.users.filters.hide')
+              : translation.translate('admin.users.filters.show')
+          }}
+        </button>
+      </div>
+    </div>
+
+    @if (showFilters()) {
+      <div class="filters-grid">
+        <fieldset class="filter-field">
+          <legend class="filter-label">
+            {{ translation.translate('admin.users.search.roleLabel') }}
+          </legend>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                [checked]="isAllRolesSelected()"
+                (change)="toggleAllRoles($event.target.checked)"
+              />
+              <span>{{
+                translation.translate('admin.users.search.allRoles')
+              }}</span>
+            </label>
+            @for (option of roleOptions; track option.value) {
+              <label class="filter-option">
+                <input
+                  type="checkbox"
+                  [checked]="isRoleSelected(option.value)"
+                  (change)="toggleRole(option.value, $event.target.checked)"
+                />
+                <span>{{ translation.translate(option.labelKey) }}</span>
+              </label>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="filter-field">
+          <legend class="filter-label">
+            {{ translation.translate('admin.users.search.verificationLabel') }}
+          </legend>
+          <div class="filter-options">
+            @for (option of verificationOptions; track option.value) {
+              <label class="filter-option">
+                <input
+                  type="checkbox"
+                  [checked]="isVerificationSelected(option.value)"
+                  (change)="
+                    toggleVerification(option.value, $event.target.checked)
+                  "
+                />
+                <span>{{ translation.translate(option.labelKey) }}</span>
+              </label>
+            }
+          </div>
+        </fieldset>
+      </div>
+    }
+  </div>
 
   @if (error()) {
     <div class="error-message">
@@ -22,44 +119,68 @@
                 {{ translation.translate('admin.users.modal.firstName') }}
               </th>
               <th>{{ translation.translate('admin.users.modal.lastName') }}</th>
+              <th>
+                {{ translation.translate('admin.users.table.verifiedEmail') }}
+              </th>
               <th>{{ translation.translate('admin.users.table.role') }}</th>
               <th>{{ translation.translate('admin.users.table.actions') }}</th>
             </tr>
           </thead>
           <tbody>
-            @for (user of users(); track user.username) {
+            @if (filteredUsers().length > 0) {
+              @for (user of filteredUsers(); track user.username) {
+                <tr>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>
+                    {{
+                      user.verifiedEmail
+                        ? translation.translate('shared.yes')
+                        : translation.translate('shared.no')
+                    }}
+                  </td>
+                  <td>
+                    <span class="role-badge" [class]="'role-' + user.role">{{
+                      user.role
+                    }}</span>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <button
+                        class="btn btn-edit"
+                        (click)="openEditModal(user)"
+                        [disabled]="isSaving()"
+                      >
+                        {{ translation.translate('admin.users.buttons.edit') }}
+                      </button>
+                      <button
+                        class="btn btn-delete"
+                        (click)="deleteUser(user.username)"
+                        [disabled]="isSaving() || isLastAdmin(user)"
+                        [title]="
+                          isLastAdmin(user)
+                            ? translation.translate(
+                                'admin.users.messages.lastAdminDeleteProtection'
+                              )
+                            : translation.translate(
+                                'admin.users.buttons.delete'
+                              )
+                        "
+                      >
+                        {{
+                          translation.translate('admin.users.buttons.delete')
+                        }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @else {
               <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.firstName }}</td>
-                <td>{{ user.lastName }}</td>
-                <td>
-                  <span class="role-badge" [class]="'role-' + user.role">{{
-                    user.role
-                  }}</span>
-                </td>
-                <td>
-                  <button
-                    class="btn btn-edit"
-                    (click)="openEditModal(user)"
-                    [disabled]="isSaving()"
-                  >
-                    {{ translation.translate('admin.users.buttons.edit') }}
-                  </button>
-                  <button
-                    class="btn btn-delete"
-                    (click)="deleteUser(user.username)"
-                    [disabled]="isSaving() || isLastAdmin(user)"
-                    [title]="
-                      isLastAdmin(user)
-                        ? translation.translate(
-                            'admin.users.messages.lastAdminDeleteProtection'
-                          )
-                        : translation.translate('admin.users.buttons.delete')
-                    "
-                  >
-                    {{ translation.translate('admin.users.buttons.delete') }}
-                  </button>
+                <td class="no-results" colspan="7">
+                  {{ translation.translate('admin.users.search.noResults') }}
                 </td>
               </tr>
             }

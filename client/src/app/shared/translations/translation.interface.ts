@@ -87,11 +87,27 @@ export interface Translation {
     users: {
       title: string;
       subtitle: string;
+      filters: {
+        show: string;
+        hide: string;
+      };
+      search: {
+        label: string;
+        placeholder: string;
+        help: string;
+        noResults: string;
+        roleLabel: string;
+        allRoles: string;
+        verificationLabel: string;
+        verified: string;
+        unverified: string;
+      };
       noUsers: string;
       table: {
         username: string;
         email: string;
         name: string;
+        verifiedEmail: string;
         role: string;
         actions: string;
       };
