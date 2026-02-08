@@ -82,6 +82,7 @@ export const sv: Translation = {
     reports: 'Rapporter',
     settings: 'Inställningar',
     users: 'Användare',
+    profile: 'Profil',
   },
   cookies: {
     message:

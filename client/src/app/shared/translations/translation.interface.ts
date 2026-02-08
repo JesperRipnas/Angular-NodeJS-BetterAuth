@@ -80,6 +80,7 @@ export interface Translation {
     reports: string;
     settings: string;
     users: string;
+    profile: string;
   };
   cookies: {
     message: string;

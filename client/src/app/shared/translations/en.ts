@@ -82,6 +82,7 @@ export const en: Translation = {
     reports: 'Reports',
     settings: 'Settings',
     users: 'Users',
+    profile: 'Profile',
   },
   cookies: {
     message:

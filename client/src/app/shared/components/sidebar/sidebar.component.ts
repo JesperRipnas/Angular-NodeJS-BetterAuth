@@ -67,6 +67,12 @@ export class SidebarComponent {
             translate: true,
             route: '/dashboard',
           },
+          {
+            label: 'sidebar.profile',
+            icon: '👤',
+            translate: true,
+            route: '/profile',
+          },
         ],
       },
     ];
