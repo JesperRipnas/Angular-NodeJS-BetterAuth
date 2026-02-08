@@ -35,7 +35,7 @@ export class PaginatorComponent {
     const current = this.pageIndex();
     const half = Math.floor(max / 2);
     let start = Math.max(1, current - half);
-    let end = Math.min(total, start + max - 1);
+    const end = Math.min(total, start + max - 1);
 
     if (end - start + 1 < max) {
       start = Math.max(1, end - max + 1);
