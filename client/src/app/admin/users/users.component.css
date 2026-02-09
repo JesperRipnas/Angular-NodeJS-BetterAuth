@@ -158,9 +158,9 @@
 }
 
 .search-input:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  outline: none;
   border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 :host-context(.dark) .search-input {
@@ -328,35 +328,43 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: transparent;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 .col-username {
-  width: 10%;
+  width: auto;
 }
 
 .col-email {
-  width: 14%;
+  width: auto;
 }
 
 .col-first-name {
-  width: 8%;
+  width: auto;
 }
 
 .col-last-name {
-  width: 8%;
+  width: auto;
+}
+
+.col-created {
+  width: 9rem;
+}
+
+.col-updated {
+  width: 9rem;
 }
 
 .col-verified {
-  width: 8%;
+  width: 6rem;
 }
 
 .col-role {
-  width: 12%;
+  width: 6.5rem;
 }
 
 .col-actions {
-  width: 12%;
+  width: 7.5rem;
 }
 
 :host-context(.dark) table {
@@ -379,6 +387,15 @@ th {
   font-weight: 600;
   color: #475569;
   font-size: 0.875rem;
+}
+
+.col-center {
+  text-align: center;
+}
+
+.col-center .sort-button {
+  justify-content: center;
+  width: 100%;
 }
 
 :host-context(.dark) th {
@@ -411,6 +428,10 @@ td {
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
   color: #374151;
+}
+
+.date-cell {
+  white-space: nowrap;
 }
 
 :host-context(.dark) td {
@@ -469,8 +490,56 @@ tbody tr:hover {
 .actions-cell {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.4rem;
   flex-wrap: nowrap;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.icon-button svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: currentColor;
+}
+
+.icon-button:hover:not(:disabled) {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.icon-button-delete:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+:host-context(.dark) .icon-button {
+  color: #cbd5e1;
+}
+
+:host-context(.dark) .icon-button:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.2);
+  color: #bfdbfe;
+}
+
+:host-context(.dark) .icon-button-delete:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
 }
 
 .btn {
@@ -534,6 +603,11 @@ tbody tr:hover {
 
 .btn:disabled {
   opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.icon-button:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
 }
 

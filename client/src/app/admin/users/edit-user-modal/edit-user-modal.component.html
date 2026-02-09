@@ -23,13 +23,31 @@
           <label for="username">{{
             translation.translate('admin.users.table.username')
           }}</label>
-          <input
-            type="text"
-            id="username"
-            disabled
-            [value]="formData()?.username"
-            class="disabled-input"
-          />
+          <div class="input-with-icon">
+            <input
+              type="text"
+              id="username"
+              [value]="formData()?.username ?? ''"
+              (input)="onUsernameInput($any($event.target).value)"
+            />
+            @if (usernameStatus() !== 'idle') {
+              <span
+                class="status-icon"
+                [class.is-valid]="usernameStatus() === 'valid'"
+                [class.is-invalid]="usernameStatus() === 'invalid'"
+                [attr.title]="
+                  usernameStatus() === 'invalid'
+                    ? translation.translate(
+                        'admin.users.messages.usernameUniqueHint'
+                      )
+                    : null
+                "
+                aria-hidden="true"
+              >
+                {{ usernameStatus() === 'valid' ? '✓' : '✕' }}
+              </span>
+            }
+          </div>
         </div>
 
         <div class="form-group">
@@ -60,12 +78,31 @@
           <label for="email">{{
             translation.translate('admin.users.table.email')
           }}</label>
-          <input
-            type="email"
-            id="email"
-            [value]="formData()?.email ?? ''"
-            (change)="updateField('email', $any($event.target).value)"
-          />
+          <div class="input-with-icon">
+            <input
+              type="email"
+              id="email"
+              [value]="formData()?.email ?? ''"
+              (input)="onEmailInput($any($event.target).value)"
+            />
+            @if (emailStatus() !== 'idle') {
+              <span
+                class="status-icon"
+                [class.is-valid]="emailStatus() === 'valid'"
+                [class.is-invalid]="emailStatus() === 'invalid'"
+                [attr.title]="
+                  emailStatus() === 'invalid'
+                    ? translation.translate(
+                        'admin.users.messages.emailInvalidHint'
+                      )
+                    : null
+                "
+                aria-hidden="true"
+              >
+                {{ emailStatus() === 'valid' ? '✓' : '✕' }}
+              </span>
+            }
+          </div>
         </div>
 
         <div class="form-group">
@@ -116,7 +153,14 @@
           <button type="button" class="btn btn-cancel" (click)="onClose()">
             {{ translation.translate('admin.users.buttons.cancel') }}
           </button>
-          <button type="button" class="btn btn-save" (click)="onSave()">
+          <button
+            type="button"
+            class="btn btn-save"
+            (click)="onSave()"
+            [disabled]="
+              usernameStatus() === 'invalid' || emailStatus() === 'invalid'
+            "
+          >
             {{ translation.translate('admin.users.buttons.save') }}
           </button>
         </div>

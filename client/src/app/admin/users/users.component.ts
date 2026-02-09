@@ -26,6 +26,8 @@ import { PaginatorComponent } from '../../shared/components/paginator/paginator.
 export class UsersComponent implements OnInit {
   private readonly usersService = inject(UsersService);
   protected readonly translation = inject(TranslationService);
+  private readonly pageSizeStorageKey = 'admin.users.pageSize';
+  private readonly filtersStorageKey = 'admin.users.filters';
 
   users = signal<AuthUser[]>([]);
   isLoading = signal(false);
@@ -34,7 +36,7 @@ export class UsersComponent implements OnInit {
   isSaving = signal(false);
   showFilters = signal(false);
   searchTerm = signal('');
-  selectedRoles = signal<Role[]>([]);
+  selectedRoles = signal<Role[]>([Role.ADMIN, Role.SELLER, Role.USER]);
   selectedVerification = signal<('verified' | 'unverified')[]>([
     'verified',
     'unverified',
@@ -47,11 +49,13 @@ export class UsersComponent implements OnInit {
     | 'email'
     | 'firstName'
     | 'lastName'
+    | 'createdAt'
+    | 'updatedAt'
     | 'verifiedEmail'
     | 'role'
     | null
-  >(null);
-  sortDirection = signal<'asc' | 'desc'>('asc');
+  >('createdAt');
+  sortDirection = signal<'asc' | 'desc'>('desc');
 
   readonly roleOptions = [
     { value: Role.ADMIN, labelKey: 'admin.users.roles.admin' },
@@ -77,7 +81,7 @@ export class UsersComponent implements OnInit {
     const selectedVerification = this.selectedVerification();
     if (
       !query &&
-      selectedRoles.length === 0 &&
+      selectedRoles.length === this.roleOptions.length &&
       selectedVerification.length === 0
     ) {
       return this.users();
@@ -87,8 +91,7 @@ export class UsersComponent implements OnInit {
       const username = user.username?.toLowerCase() ?? '';
       const email = user.email?.toLowerCase() ?? '';
       const matchesQuery = username.includes(query) || email.includes(query);
-      const matchesRole =
-        selectedRoles.length === 0 || selectedRoles.includes(user.role);
+      const matchesRole = selectedRoles.includes(user.role);
       const matchesVerification =
         selectedVerification.length === 0 ||
         (user.verifiedEmail
@@ -118,7 +121,7 @@ export class UsersComponent implements OnInit {
   });
 
   readonly isAllRolesSelected = computed(
-    () => this.selectedRoles().length === 0
+    () => this.selectedRoles().length === this.roleOptions.length
   );
 
   private readonly paginationGuard = effect(() => {
@@ -132,6 +135,8 @@ export class UsersComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.restorePageSize();
+    this.restoreFilters();
     this.loadUsers();
   }
 
@@ -166,17 +171,21 @@ export class UsersComponent implements OnInit {
     const target = event.target as HTMLInputElement | null;
     this.searchTerm.set(target?.value ?? '');
     this.pageIndex.set(1);
+    this.persistFilters();
   }
 
   toggleAllRoles(checked: boolean): void {
     if (checked) {
-      this.selectedRoles.set([]);
+      this.selectedRoles.set(this.roleOptions.map((option) => option.value));
       this.pageIndex.set(1);
+      this.persistFilters();
       return;
     }
 
-    this.selectedRoles.set(this.roleOptions.map((option) => option.value));
+    const fallbackRole = this.roleOptions[0]?.value ?? Role.USER;
+    this.selectedRoles.set([fallbackRole]);
     this.pageIndex.set(1);
+    this.persistFilters();
   }
 
   toggleRole(role: Role, checked: boolean): void {
@@ -185,9 +194,11 @@ export class UsersComponent implements OnInit {
         return roles.includes(role) ? roles : [...roles, role];
       }
 
-      return roles.filter((value) => value !== role);
+      const remaining = roles.filter((value) => value !== role);
+      return remaining.length === 0 ? roles : remaining;
     });
     this.pageIndex.set(1);
+    this.persistFilters();
   }
 
   isRoleSelected(role: Role): boolean {
@@ -207,6 +218,7 @@ export class UsersComponent implements OnInit {
       return current.filter((item) => item !== value);
     });
     this.pageIndex.set(1);
+    this.persistFilters();
   }
 
   isVerificationSelected(value: 'verified' | 'unverified'): boolean {
@@ -228,7 +240,9 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  getSortIndicator(key: Exclude<ReturnType<typeof this.sortKey>, null>): string {
+  getSortIndicator(
+    key: Exclude<ReturnType<typeof this.sortKey>, null>
+  ): string {
     if (this.sortKey() !== key) return '';
     return this.sortDirection() === 'asc' ? '▲' : '▼';
   }
@@ -240,11 +254,23 @@ export class UsersComponent implements OnInit {
     return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
   }
 
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString();
+  }
+
   private getSortableValue(
     user: AuthUser,
     key: Exclude<ReturnType<typeof this.sortKey>, null>
   ): string | number {
     switch (key) {
+      case 'createdAt':
+      case 'updatedAt': {
+        const dateValue = Date.parse(user[key] ?? '');
+        return Number.isNaN(dateValue) ? 0 : dateValue;
+      }
       case 'verifiedEmail':
         return user.verifiedEmail ? 1 : 0;
       default:
@@ -255,6 +281,79 @@ export class UsersComponent implements OnInit {
   onPageSizeChange(size: number): void {
     this.pageSize.set(size);
     this.pageIndex.set(1);
+    this.persistPageSize(size);
+  }
+
+  private restorePageSize(): void {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem(this.pageSizeStorageKey);
+    if (!stored) return;
+    const parsed = Number.parseInt(stored, 10);
+    if (Number.isNaN(parsed)) return;
+    if (!this.pageSizeOptions.includes(parsed)) return;
+    this.pageSize.set(parsed);
+  }
+
+  private persistPageSize(size: number): void {
+    if (typeof window === 'undefined') return;
+    if (!this.pageSizeOptions.includes(size)) return;
+    window.localStorage.setItem(this.pageSizeStorageKey, String(size));
+  }
+
+  private restoreFilters(): void {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem(this.filtersStorageKey);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as {
+        searchTerm?: string;
+        selectedRoles?: Role[];
+        selectedVerification?: ('verified' | 'unverified')[];
+      };
+
+      if (typeof parsed.searchTerm === 'string') {
+        this.searchTerm.set(parsed.searchTerm);
+      }
+
+      if (Array.isArray(parsed.selectedRoles)) {
+        const allowedRoles = new Set(
+          this.roleOptions.map((option) => option.value)
+        );
+        const roles = parsed.selectedRoles.filter((role) =>
+          allowedRoles.has(role)
+        );
+        if (roles.length > 0) {
+          this.selectedRoles.set(roles);
+        }
+      }
+
+      if (Array.isArray(parsed.selectedVerification)) {
+        const allowedVerification: Array<'verified' | 'unverified'> = [
+          'verified',
+          'unverified',
+        ];
+        const verification = parsed.selectedVerification.filter((value) =>
+          allowedVerification.includes(value)
+        );
+        this.selectedVerification.set(verification);
+      }
+    } catch {
+      return;
+    }
+  }
+
+  private persistFilters(): void {
+    if (typeof window === 'undefined') return;
+    const payload = {
+      searchTerm: this.searchTerm(),
+      selectedRoles: this.selectedRoles(),
+      selectedVerification: this.selectedVerification(),
+    };
+    window.localStorage.setItem(
+      this.filtersStorageKey,
+      JSON.stringify(payload)
+    );
   }
 
   isLastAdmin(user: AuthUser): boolean {
@@ -264,6 +363,17 @@ export class UsersComponent implements OnInit {
   saveEditedUser(updatedUser: AuthUser): void {
     const originalUser = this.selectedUserForEdit();
     if (!originalUser) return;
+
+    const normalizedUsername = this.normalizeUsername(updatedUser.username);
+    if (
+      normalizedUsername &&
+      this.isUsernameTaken(normalizedUsername, originalUser.uuid)
+    ) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.usernameTaken')
+      );
+      return;
+    }
 
     this.isSaving.set(true);
     this.error.set(null);
@@ -312,5 +422,20 @@ export class UsersComponent implements OnInit {
         },
       });
     }
+  }
+
+  private normalizeUsername(value: string | null | undefined): string {
+    return value?.trim().toLowerCase() ?? '';
+  }
+
+  private isUsernameTaken(
+    normalizedUsername: string,
+    currentUuid: string
+  ): boolean {
+    return this.users().some(
+      (user) =>
+        user.uuid !== currentUuid &&
+        this.normalizeUsername(user.username) === normalizedUsername
+    );
   }
 }

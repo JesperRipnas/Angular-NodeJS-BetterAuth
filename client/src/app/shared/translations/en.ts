@@ -117,6 +117,8 @@ export const en: Translation = {
         username: 'Username',
         email: 'Email',
         name: 'Name',
+        createdAt: 'Created',
+        updatedAt: 'Updated',
         verifiedEmail: 'Verified',
         role: 'Role',
         actions: 'Actions',
@@ -144,6 +146,9 @@ export const en: Translation = {
         saveError: 'Failed to update user',
         lastAdminDeleteProtection: 'Cannot delete the last admin account',
         confirmDelete: 'Are you sure you want to delete this user?',
+        usernameTaken: 'Username is already in use',
+        usernameUniqueHint: 'Username must be unique',
+        emailInvalidHint: 'Enter a valid email address',
       },
       roles: {
         user: 'User',

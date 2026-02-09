@@ -114,6 +114,8 @@ export interface Translation {
         username: string;
         email: string;
         name: string;
+        createdAt: string;
+        updatedAt: string;
         verifiedEmail: string;
         role: string;
         actions: string;
@@ -141,6 +143,9 @@ export interface Translation {
         saveError: string;
         lastAdminDeleteProtection: string;
         confirmDelete: string;
+        usernameTaken: string;
+        usernameUniqueHint: string;
+        emailInvalidHint: string;
       };
       roles: {
         user: string;

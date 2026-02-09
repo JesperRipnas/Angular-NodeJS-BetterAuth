@@ -1,10 +1,4 @@
 <section class="users-container">
-  <div class="users-header">
-    <div>
-      <h1 class="title">{{ translation.translate('admin.users.title') }}</h1>
-    </div>
-  </div>
-
   <div class="users-panel">
     <div class="filters-card" aria-label="User filters">
       <div class="search-row" role="search">
@@ -108,12 +102,6 @@
       }
     </div>
 
-    @if (error()) {
-      <div class="error-message">
-        {{ error() }}
-      </div>
-    }
-
     @if (isLoading()) {
       <div class="loading">{{ translation.translate('shared.loading') }}</div>
     } @else {
@@ -124,6 +112,8 @@
             <col class="col-email" />
             <col class="col-first-name" />
             <col class="col-last-name" />
+            <col class="col-created" />
+            <col class="col-updated" />
             <col class="col-verified" />
             <col class="col-role" />
             <col class="col-actions" />
@@ -178,7 +168,34 @@
                   }}</span>
                 </button>
               </th>
-              <th [attr.aria-sort]="getAriaSort('verifiedEmail')">
+              <th [attr.aria-sort]="getAriaSort('createdAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('createdAt')"
+                >
+                  {{ translation.translate('admin.users.table.createdAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('createdAt')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('updatedAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('updatedAt')"
+                >
+                  {{ translation.translate('admin.users.table.updatedAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('updatedAt')
+                  }}</span>
+                </button>
+              </th>
+              <th
+                class="col-center"
+                [attr.aria-sort]="getAriaSort('verifiedEmail')"
+              >
                 <button
                   type="button"
                   class="sort-button"
@@ -202,9 +219,7 @@
                   }}</span>
                 </button>
               </th>
-              <th>
-                {{ translation.translate('admin.users.table.actions') }}
-              </th>
+              <th class="col-center"></th>
             </tr>
           </thead>
           <tbody>
@@ -215,7 +230,15 @@
                   <td>{{ user.email }}</td>
                   <td>{{ user.firstName }}</td>
                   <td>{{ user.lastName }}</td>
-                  <td>
+                  <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+                  <td class="date-cell">
+                    {{
+                      user.updatedAt
+                        ? formatDate(user.updatedAt)
+                        : translation.translate('shared.no')
+                    }}
+                  </td>
+                  <td class="col-center">
                     {{
                       user.verifiedEmail
                         ? translation.translate('shared.yes')
@@ -227,20 +250,37 @@
                       {{ user.role }}
                     </span>
                   </td>
-                  <td>
+                  <td class="col-center">
                     <div class="actions-cell">
                       <button
-                        class="btn btn-edit"
+                        class="icon-button icon-button-edit"
                         (click)="openEditModal(user)"
                         [disabled]="isSaving()"
+                        [attr.aria-label]="
+                          translation.translate('admin.users.buttons.edit')
+                        "
+                        [attr.title]="
+                          translation.translate('admin.users.buttons.edit')
+                        "
                       >
-                        {{ translation.translate('admin.users.buttons.edit') }}
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.83H5v-.92l8.06-8.06.92.92L5.92 20.08zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                          />
+                        </svg>
                       </button>
                       <button
-                        class="btn btn-delete"
+                        class="icon-button icon-button-delete"
                         (click)="deleteUser(user.uuid)"
                         [disabled]="isSaving() || isLastAdmin(user)"
-                        [title]="
+                        [attr.aria-label]="
+                          translation.translate('admin.users.buttons.delete')
+                        "
+                        [attr.title]="
                           isLastAdmin(user)
                             ? translation.translate(
                                 'admin.users.messages.lastAdminDeleteProtection'
@@ -250,9 +290,15 @@
                               )
                         "
                       >
-                        {{
-                          translation.translate('admin.users.buttons.delete')
-                        }}
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M6 7h12l-1 14H7L6 7zm3-3h6l1 1h4v2H4V5h4l1-1z"
+                          />
+                        </svg>
                       </button>
                     </div>
                   </td>
@@ -290,6 +336,7 @@
   <app-edit-user-modal
     [user]="selectedUserForEdit()"
     [adminCount]="adminCount()"
+    [existingUsers]="users()"
     (closeModal)="closeEditModal()"
     (saveUser)="saveEditedUser($event)"
   ></app-edit-user-modal>

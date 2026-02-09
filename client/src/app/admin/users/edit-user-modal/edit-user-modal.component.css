@@ -107,6 +107,36 @@
   transition: all 0.2s ease;
 }
 
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input {
+  padding-right: 2.25rem;
+  width: 100%;
+}
+
+.status-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: default;
+}
+
+.status-icon.is-valid {
+  color: #16a34a;
+}
+
+.status-icon.is-invalid {
+  color: #dc2626;
+  cursor: pointer;
+}
+
 :host-context(.dark) .form-group input,
 :host-context(.dark) .form-group select {
   background: #374151;
@@ -157,6 +187,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
   flex: 1;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-cancel {

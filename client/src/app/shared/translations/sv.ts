@@ -117,6 +117,8 @@ export const sv: Translation = {
         username: 'Användarnamn',
         email: 'E-post',
         name: 'Namn',
+        createdAt: 'Skapad',
+        updatedAt: 'Uppdaterad',
         verifiedEmail: 'Verifierad',
         role: 'Roll',
         actions: 'Åtgärder',
@@ -145,6 +147,9 @@ export const sv: Translation = {
         lastAdminDeleteProtection:
           'Kan inte radera det senaste administratörskontot',
         confirmDelete: 'Är du säker på att du vill radera denna användare?',
+        usernameTaken: 'Användarnamnet används redan',
+        usernameUniqueHint: 'Användarnamnet måste vara unikt',
+        emailInvalidHint: 'Ange en giltig e-postadress',
       },
       roles: {
         user: 'Användare',

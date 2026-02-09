@@ -34,6 +34,8 @@ describe('AuthController', () => {
       firstName: 'Admin',
       lastName: 'User',
       birthDate: '1990-01-01',
+      createdAt: '2024-01-05T09:10:00Z',
+      updatedAt: '2025-01-12T12:30:00Z',
       role: Role.ADMIN,
       verifiedEmail: true,
       uuid: '0f2b4a2e-3b9a-4e0a-a98d-8f4f5d2f9a01',
