@@ -41,7 +41,17 @@ export class UsersComponent implements OnInit {
   ]);
   pageIndex = signal(1);
   pageSize = signal(5);
-  readonly pageSizeOptions = [10, 15, 20];
+  readonly pageSizeOptions = [5, 10, 15, 20];
+  sortKey = signal<
+    | 'username'
+    | 'email'
+    | 'firstName'
+    | 'lastName'
+    | 'verifiedEmail'
+    | 'role'
+    | null
+  >(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   readonly roleOptions = [
     { value: Role.ADMIN, labelKey: 'admin.users.roles.admin' },
@@ -90,7 +100,21 @@ export class UsersComponent implements OnInit {
 
   readonly pagedUsers = computed(() => {
     const start = (this.pageIndex() - 1) * this.pageSize();
-    return this.filteredUsers().slice(start, start + this.pageSize());
+    return this.sortedUsers().slice(start, start + this.pageSize());
+  });
+
+  readonly sortedUsers = computed(() => {
+    const key = this.sortKey();
+    if (!key) return this.filteredUsers();
+
+    const direction = this.sortDirection() === 'asc' ? 1 : -1;
+    return [...this.filteredUsers()].sort((a, b) => {
+      const valueA = this.getSortableValue(a, key);
+      const valueB = this.getSortableValue(b, key);
+      if (valueA < valueB) return -1 * direction;
+      if (valueA > valueB) return 1 * direction;
+      return 0;
+    });
   });
 
   readonly isAllRolesSelected = computed(
@@ -191,6 +215,41 @@ export class UsersComponent implements OnInit {
 
   onPageChange(page: number): void {
     this.pageIndex.set(page);
+  }
+
+  toggleSort(key: Exclude<ReturnType<typeof this.sortKey>, null>): void {
+    if (this.sortKey() === key) {
+      this.sortDirection.update((direction) =>
+        direction === 'asc' ? 'desc' : 'asc'
+      );
+    } else {
+      this.sortKey.set(key);
+      this.sortDirection.set('asc');
+    }
+  }
+
+  getSortIndicator(key: Exclude<ReturnType<typeof this.sortKey>, null>): string {
+    if (this.sortKey() !== key) return '';
+    return this.sortDirection() === 'asc' ? '▲' : '▼';
+  }
+
+  getAriaSort(
+    key: Exclude<ReturnType<typeof this.sortKey>, null>
+  ): 'none' | 'ascending' | 'descending' {
+    if (this.sortKey() !== key) return 'none';
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  private getSortableValue(
+    user: AuthUser,
+    key: Exclude<ReturnType<typeof this.sortKey>, null>
+  ): string | number {
+    switch (key) {
+      case 'verifiedEmail':
+        return user.verifiedEmail ? 1 : 0;
+      default:
+        return String(user[key] ?? '').toLowerCase();
+    }
   }
 
   onPageSizeChange(size: number): void {

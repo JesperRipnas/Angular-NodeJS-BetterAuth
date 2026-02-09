@@ -130,18 +130,78 @@
           </colgroup>
           <thead>
             <tr>
-              <th>
-                {{ translation.translate('admin.users.table.username') }}
+              <th [attr.aria-sort]="getAriaSort('username')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('username')"
+                >
+                  {{ translation.translate('admin.users.table.username') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('username')
+                  }}</span>
+                </button>
               </th>
-              <th>{{ translation.translate('admin.users.table.email') }}</th>
-              <th>
-                {{ translation.translate('admin.users.modal.firstName') }}
+              <th [attr.aria-sort]="getAriaSort('email')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('email')"
+                >
+                  {{ translation.translate('admin.users.table.email') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('email')
+                  }}</span>
+                </button>
               </th>
-              <th>{{ translation.translate('admin.users.modal.lastName') }}</th>
-              <th>
-                {{ translation.translate('admin.users.table.verifiedEmail') }}
+              <th [attr.aria-sort]="getAriaSort('firstName')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('firstName')"
+                >
+                  {{ translation.translate('admin.users.modal.firstName') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('firstName')
+                  }}</span>
+                </button>
               </th>
-              <th>{{ translation.translate('admin.users.table.role') }}</th>
+              <th [attr.aria-sort]="getAriaSort('lastName')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('lastName')"
+                >
+                  {{ translation.translate('admin.users.modal.lastName') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('lastName')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('verifiedEmail')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('verifiedEmail')"
+                >
+                  {{ translation.translate('admin.users.table.verifiedEmail') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('verifiedEmail')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('role')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('role')"
+                >
+                  {{ translation.translate('admin.users.table.role') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('role')
+                  }}</span>
+                </button>
+              </th>
               <th>
                 {{ translation.translate('admin.users.table.actions') }}
               </th>
