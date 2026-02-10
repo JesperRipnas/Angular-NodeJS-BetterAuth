@@ -1,4 +1,8 @@
-@use 'tailwindcss';
+@config "../tailwind.config.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   margin: 0;
@@ -6,6 +10,7 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
@@ -15,6 +20,18 @@ body {
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  background-color: #ffffff;
+  cursor: pointer;
 }
 
 :root {
