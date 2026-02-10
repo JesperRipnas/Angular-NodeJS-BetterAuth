@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UuidService } from './uuid/uuid.service';
+import { UuidService } from './uuid/uuid.service.js';
 
 @Module({
   providers: [UuidService],
   exports: [UuidService],
 })
-// eslint-disable-next-line prettier/prettier
-export class CommonModule { }
+export class CommonModule {}

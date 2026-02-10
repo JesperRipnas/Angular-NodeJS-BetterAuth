@@ -23,6 +23,24 @@ export class UsersService {
     return this.http.get<AuthUser[]>(this.API_URL);
   }
 
+  checkUsername(username: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.API_URL}/check-username`,
+      {
+        params: { username },
+      }
+    );
+  }
+
+  checkEmail(email: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.API_URL}/check-email`,
+      {
+        params: { email },
+      }
+    );
+  }
+
   getUser(id: string): Observable<AuthUser> {
     return this.http.get<AuthUser>(`${this.API_URL}/${id}`);
   }

@@ -25,6 +25,14 @@ import { TranslationService } from '../../../shared/services/translation.service
   styleUrls: ['./edit-user-modal.component.css'],
 })
 export class EditUserModalComponent implements OnChanges, OnDestroy {
+  isModalValid(): boolean {
+    return (
+      this.usernameStatus() === 'valid' &&
+      this.emailStatus() === 'valid' &&
+      this.firstNameStatus() === 'valid' &&
+      this.lastNameStatus() === 'valid'
+    );
+  }
   user = input<AuthUser | null>(null);
   adminCount = input<number>(0);
   existingUsers = input<AuthUser[]>([]);
@@ -47,9 +55,49 @@ export class EditUserModalComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['user'] && this.user()) {
       this.formData.set({ ...this.user() });
-      this.usernameStatus.set('idle');
-      this.emailStatus.set('idle');
+      // run initial validation for all fields when modal opens
+      this.clearDebounces();
+      this.validateAllFields();
     }
+  }
+
+  private clearDebounces(): void {
+    if (this.usernameDebounceId !== null) {
+      window.clearTimeout(this.usernameDebounceId);
+      this.usernameDebounceId = null;
+    }
+    if (this.emailDebounceId !== null) {
+      window.clearTimeout(this.emailDebounceId);
+      this.emailDebounceId = null;
+    }
+  }
+
+  private validateAllFields(): void {
+    const data = this.formData();
+    if (!data) return;
+
+    // Username
+    const username = data.username ?? '';
+    const usernamePattern = /^[a-zA-Z0-9]+$/;
+    if (!username || !usernamePattern.test(username.trim())) {
+      this.usernameStatus.set('invalid');
+    } else {
+      this.usernameStatus.set(
+        this.isUsernameAvailable(username) ? 'valid' : 'invalid'
+      );
+    }
+
+    // Email
+    const email = data.email ?? '';
+    this.emailStatus.set(this.isEmailValid(email) ? 'valid' : 'invalid');
+
+    // First name
+    const firstName = data.firstName ?? '';
+    this.firstNameStatus.set(this.isNameValid(firstName) ? 'valid' : 'invalid');
+
+    // Last name
+    const lastName = data.lastName ?? '';
+    this.lastNameStatus.set(this.isNameValid(lastName) ? 'valid' : 'invalid');
   }
 
   ngOnDestroy(): void {
@@ -83,8 +131,37 @@ export class EditUserModalComponent implements OnChanges, OnDestroy {
   }
 
   onUsernameInput(value: string): void {
-    this.updateField('username', value as AuthUser['username']);
-    this.scheduleUsernameValidation(value);
+    const normalized = this.capitalizeFirstLetter(value);
+    this.updateField('username', normalized as AuthUser['username']);
+    const usernamePattern = /^[a-zA-Z0-9]+$/;
+    if (!normalized || !usernamePattern.test(normalized.trim())) {
+      this.usernameStatus.set('invalid');
+      return;
+    }
+    this.scheduleUsernameValidation(normalized);
+  }
+  // Validation signals for first/last name
+  firstNameStatus = signal<'idle' | 'valid' | 'invalid'>('idle');
+  lastNameStatus = signal<'idle' | 'valid' | 'invalid'>('idle');
+
+  onFirstNameInput(value: string): void {
+    const normalized = this.capitalizeFirstLetter(value);
+    this.updateField('firstName', normalized as AuthUser['firstName']);
+    if (!this.isNameValid(normalized)) {
+      this.firstNameStatus.set('invalid');
+    } else {
+      this.firstNameStatus.set('valid');
+    }
+  }
+
+  onLastNameInput(value: string): void {
+    const normalized = this.capitalizeFirstLetter(value);
+    this.updateField('lastName', normalized as AuthUser['lastName']);
+    if (!this.isNameValid(normalized)) {
+      this.lastNameStatus.set('invalid');
+    } else {
+      this.lastNameStatus.set('valid');
+    }
   }
 
   onEmailInput(value: string): void {
@@ -103,6 +180,11 @@ export class EditUserModalComponent implements OnChanges, OnDestroy {
     }
     this.usernameStatus.set('idle');
     this.usernameDebounceId = window.setTimeout(() => {
+      const usernamePattern = /^[a-zA-Z0-9]+$/;
+      if (!value || !usernamePattern.test(value.trim())) {
+        this.usernameStatus.set('invalid');
+        return;
+      }
       this.usernameStatus.set(
         this.isUsernameAvailable(value) ? 'valid' : 'invalid'
       );
@@ -141,9 +223,29 @@ export class EditUserModalComponent implements OnChanges, OnDestroy {
     return value?.trim().toLowerCase() ?? '';
   }
 
+  private capitalizeFirstLetter(value: string | null | undefined): string {
+    const trimmed = value?.trimStart() ?? '';
+    if (!trimmed) return '';
+    return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
+  }
+
   private isEmailValid(value: string | null | undefined): boolean {
     const normalized = value?.trim() ?? '';
     if (!normalized) return false;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
+  }
+
+  // Validate names with Unicode-aware regex when available, and fallback to
+  // a permissive Latin/accented range (includes hyphens, spaces and apostrophes)
+  private isNameValid(value: string | null | undefined): boolean {
+    const normalized = value?.trim() ?? '';
+    if (!normalized) return false;
+    try {
+      const pattern = /^\p{L}[\p{L}\p{M}' -]*$/u;
+      return pattern.test(normalized);
+    } catch (e) {
+      const fallback = /^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ' \-]*$/;
+      return fallback.test(normalized);
+    }
   }
 }

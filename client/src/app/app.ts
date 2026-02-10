@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -33,9 +34,38 @@ export class AppComponent {
 
   isLoggedIn = computed(() => this.authService.isLoggedIn());
   showAuthModal = signal(false);
+  private readonly hasRedirectedOnInit = signal(false);
+  isMobileMenuOpen = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.hasRedirectedOnInit()) {
+        return;
+      }
+
+      if (
+        this.authService.initialSessionResolved() &&
+        this.authService.hadSessionOnInit()
+      ) {
+        this.hasRedirectedOnInit.set(true);
+        this.showAuthModal.set(false);
+        if (!this.router.url.startsWith('/dashboard')) {
+          this.router.navigate(['/dashboard']);
+        }
+      }
+    });
+  }
 
   toggleAuthModal(): void {
     this.showAuthModal.update((value) => !value);
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update((value) => !value);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 
   goToProfile(): void {

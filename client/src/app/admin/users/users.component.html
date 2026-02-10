@@ -1,4 +1,198 @@
 <section class="users-container">
+  <section
+    class="analytics-panel"
+    [attr.aria-label]="translation.translate('admin.users.analytics.title')"
+  >
+    <div class="users-analytics">
+      <div class="analytics-header">
+        <div>
+          <h2 class="analytics-title">
+            {{ translation.translate('admin.users.analytics.title') }}
+          </h2>
+          <p class="analytics-subtitle">
+            {{ translation.translate('admin.users.analytics.subtitle') }}
+          </p>
+        </div>
+        <div class="analytics-total" aria-live="polite">
+          <span class="analytics-total-label">
+            {{ translation.translate('admin.users.analytics.totalUsers') }}
+          </span>
+          <span class="analytics-total-value">{{ totalUsers() }}</span>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <section class="analytics-card" aria-labelledby="tiers-chart-title">
+          <h3 id="tiers-chart-title" class="analytics-card-title">
+            {{ translation.translate('admin.users.analytics.paymentTiers') }}
+          </h3>
+          <div class="bar-chart" role="list">
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierFree') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierFree') +
+                  ': 120'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="60"></span>
+              </div>
+              <span class="bar-value">120</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierStarter') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierStarter') +
+                  ': 45'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="30"></span>
+              </div>
+              <span class="bar-value">45</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierPro') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierPro') +
+                  ': 18'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="18"></span>
+              </div>
+              <span class="bar-value">18</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{
+                  translation.translate('admin.users.analytics.tierEnterprise')
+                }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate(
+                    'admin.users.analytics.tierEnterprise'
+                  ) + ': 3'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="8"></span>
+              </div>
+              <span class="bar-value">3</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="signup-chart-title">
+          <h3 id="signup-chart-title" class="analytics-card-title">
+            {{
+              translation.translate('admin.users.analytics.signupsLastMonths')
+            }}
+          </h3>
+          <div class="spark-chart" role="list">
+            @for (item of monthlySignups(); track item.key) {
+              <div class="spark-item" role="listitem">
+                <span class="spark-count">{{ item.count }}</span>
+                <div
+                  class="spark-bar"
+                  role="img"
+                  [attr.aria-label]="item.label + ': ' + item.count"
+                  [style.height.%]="item.percent"
+                ></div>
+                <span class="spark-label">{{ item.label }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="premium-chart-title">
+          <h3 id="premium-chart-title" class="analytics-card-title">
+            {{
+              translation.translate(
+                'admin.users.analytics.premiumUsersPlaceholder'
+              )
+            }}
+          </h3>
+          <div
+            class="line-chart"
+            role="img"
+            [attr.aria-label]="
+              translation.translate(
+                'admin.users.analytics.premiumUsersPlaceholder'
+              ) + ': 6 month trend'
+            "
+          >
+            <svg viewBox="0 0 240 120" aria-hidden="true" focusable="false">
+              <polyline
+                class="line-stroke"
+                points="0,90 40,82 80,70 120,58 160,50 200,40 240,32"
+              ></polyline>
+              <circle class="line-point" cx="0" cy="90" r="3"></circle>
+              <circle class="line-point" cx="40" cy="82" r="3"></circle>
+              <circle class="line-point" cx="80" cy="70" r="3"></circle>
+              <circle class="line-point" cx="120" cy="58" r="3"></circle>
+              <circle class="line-point" cx="160" cy="50" r="3"></circle>
+              <circle class="line-point" cx="200" cy="40" r="3"></circle>
+              <circle class="line-point" cx="240" cy="32" r="3"></circle>
+            </svg>
+            <div class="line-labels" aria-hidden="true">
+              <span>Sep</span>
+              <span>Oct</span>
+              <span>Nov</span>
+              <span>Dec</span>
+              <span>Jan</span>
+              <span>Feb</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="earnings-chart-title">
+          <h3 id="earnings-chart-title" class="analytics-card-title">
+            {{
+              translation.translate('admin.users.analytics.earningsPlaceholder')
+            }}
+          </h3>
+          <div class="earnings-stats" aria-live="polite">
+            <div class="earnings-item">
+              <span class="earnings-label">
+                {{
+                  translation.translate(
+                    'admin.users.analytics.earningsLast30Days'
+                  )
+                }}
+              </span>
+              <span class="earnings-value">$12,450</span>
+            </div>
+            <div class="earnings-item">
+              <span class="earnings-label">
+                {{
+                  translation.translate(
+                    'admin.users.analytics.earningsLast6Months'
+                  )
+                }}
+              </span>
+              <span class="earnings-value">$74,980</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
   <div class="users-panel">
     <div class="filters-card" aria-label="User filters">
       <div class="search-row" role="search">
@@ -105,18 +299,66 @@
       <div class="users-table">
         <table>
           <colgroup>
-            <col class="col-username" />
-            <col class="col-email" />
-            <col class="col-first-name" />
-            <col class="col-last-name" />
             <col class="col-created" />
             <col class="col-updated" />
             <col class="col-verified" />
             <col class="col-role" />
+            <col class="col-username" />
+            <col class="col-first-name" />
+            <col class="col-last-name" />
+            <col class="col-email" />
             <col class="col-actions" />
           </colgroup>
           <thead>
             <tr>
+              <th [attr.aria-sort]="getAriaSort('createdAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('createdAt')"
+                >
+                  {{ translation.translate('admin.users.table.createdAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('createdAt')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('updatedAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('updatedAt')"
+                >
+                  {{ translation.translate('admin.users.table.updatedAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('updatedAt')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('verifiedEmail')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('verifiedEmail')"
+                >
+                  {{ translation.translate('admin.users.table.verifiedEmail') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('verifiedEmail')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('role')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('role')"
+                >
+                  {{ translation.translate('admin.users.table.role') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('role')
+                  }}</span>
+                </button>
+              </th>
               <th [attr.aria-sort]="getAriaSort('username')">
                 <button
                   type="button"
@@ -126,18 +368,6 @@
                   {{ translation.translate('admin.users.table.username') }}
                   <span class="sort-indicator">{{
                     getSortIndicator('username')
-                  }}</span>
-                </button>
-              </th>
-              <th [attr.aria-sort]="getAriaSort('email')">
-                <button
-                  type="button"
-                  class="sort-button"
-                  (click)="toggleSort('email')"
-                >
-                  {{ translation.translate('admin.users.table.email') }}
-                  <span class="sort-indicator">{{
-                    getSortIndicator('email')
                   }}</span>
                 </button>
               </th>
@@ -165,54 +395,15 @@
                   }}</span>
                 </button>
               </th>
-              <th [attr.aria-sort]="getAriaSort('createdAt')">
+              <th [attr.aria-sort]="getAriaSort('email')">
                 <button
                   type="button"
                   class="sort-button"
-                  (click)="toggleSort('createdAt')"
+                  (click)="toggleSort('email')"
                 >
-                  {{ translation.translate('admin.users.table.createdAt') }}
+                  {{ translation.translate('admin.users.table.email') }}
                   <span class="sort-indicator">{{
-                    getSortIndicator('createdAt')
-                  }}</span>
-                </button>
-              </th>
-              <th [attr.aria-sort]="getAriaSort('updatedAt')">
-                <button
-                  type="button"
-                  class="sort-button"
-                  (click)="toggleSort('updatedAt')"
-                >
-                  {{ translation.translate('admin.users.table.updatedAt') }}
-                  <span class="sort-indicator">{{
-                    getSortIndicator('updatedAt')
-                  }}</span>
-                </button>
-              </th>
-              <th
-                class="col-center"
-                [attr.aria-sort]="getAriaSort('verifiedEmail')"
-              >
-                <button
-                  type="button"
-                  class="sort-button"
-                  (click)="toggleSort('verifiedEmail')"
-                >
-                  {{ translation.translate('admin.users.table.verifiedEmail') }}
-                  <span class="sort-indicator">{{
-                    getSortIndicator('verifiedEmail')
-                  }}</span>
-                </button>
-              </th>
-              <th [attr.aria-sort]="getAriaSort('role')">
-                <button
-                  type="button"
-                  class="sort-button"
-                  (click)="toggleSort('role')"
-                >
-                  {{ translation.translate('admin.users.table.role') }}
-                  <span class="sort-indicator">{{
-                    getSortIndicator('role')
+                    getSortIndicator('email')
                   }}</span>
                 </button>
               </th>
@@ -223,10 +414,6 @@
             @if (pagedUsers().length > 0) {
               @for (user of pagedUsers(); track user.uuid) {
                 <tr>
-                  <td>{{ user.username }}</td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.firstName }}</td>
-                  <td>{{ user.lastName }}</td>
                   <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
                   <td class="date-cell">
                     {{
@@ -235,7 +422,7 @@
                         : translation.translate('shared.no')
                     }}
                   </td>
-                  <td class="col-center">
+                  <td>
                     {{
                       user.verifiedEmail
                         ? translation.translate('shared.yes')
@@ -247,6 +434,10 @@
                       {{ user.role }}
                     </span>
                   </td>
+                  <td>{{ formatUsername(user.username) }}</td>
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
                   <td class="col-center">
                     <div class="actions-cell">
                       <button
@@ -310,21 +501,21 @@
             }
           </tbody>
         </table>
-        <app-paginator
-          [totalItems]="filteredUsers().length"
-          [pageSize]="pageSize()"
-          [pageIndex]="pageIndex()"
-          [pageSizeOptions]="pageSizeOptions"
-          [pageSizeLabel]="translation.translate('shared.pagination.pageSize')"
-          [pageSizeAriaLabel]="
-            translation.translate('shared.pagination.pageSizeAria')
-          "
-          [previousLabel]="translation.translate('shared.pagination.previous')"
-          [nextLabel]="translation.translate('shared.pagination.next')"
-          (pageChange)="onPageChange($event)"
-          (pageSizeChange)="onPageSizeChange($event)"
-        ></app-paginator>
       </div>
+      <app-paginator
+        [totalItems]="filteredUsers().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="pageSizeOptions"
+        [pageSizeLabel]="translation.translate('shared.pagination.pageSize')"
+        [pageSizeAriaLabel]="
+          translation.translate('shared.pagination.pageSizeAria')
+        "
+        [previousLabel]="translation.translate('shared.pagination.previous')"
+        [nextLabel]="translation.translate('shared.pagination.next')"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-paginator>
     }
   </div>
 </section>

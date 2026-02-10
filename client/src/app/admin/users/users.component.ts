@@ -28,6 +28,7 @@ export class UsersComponent implements OnInit {
   protected readonly translation = inject(TranslationService);
   private readonly pageSizeStorageKey = 'admin.users.pageSize';
   private readonly filtersStorageKey = 'admin.users.filters';
+  private readonly chartMonthCount = 6;
 
   users = signal<AuthUser[]>([]);
   isLoading = signal(false);
@@ -73,6 +74,84 @@ export class UsersComponent implements OnInit {
 
   readonly adminCount = computed(() => {
     return this.users().filter((user) => user.role === Role.ADMIN).length;
+  });
+
+  readonly totalUsers = computed(() => this.users().length);
+
+  readonly roleChart = computed(() => {
+    const total = this.totalUsers();
+    const roles = this.roleOptions.map((option) => option.value);
+
+    return roles.map((role) => {
+      const count = this.users().filter((user) => user.role === role).length;
+      const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+      return {
+        role,
+        count,
+        percent,
+      };
+    });
+  });
+
+  readonly verificationChart = computed(() => {
+    const total = this.totalUsers();
+    const verifiedCount = this.users().filter(
+      (user) => user.verifiedEmail
+    ).length;
+    const unverifiedCount = total - verifiedCount;
+
+    return [
+      {
+        key: 'verified' as const,
+        labelKey: 'admin.users.search.verified',
+        count: verifiedCount,
+        percent: total > 0 ? Math.round((verifiedCount / total) * 100) : 0,
+      },
+      {
+        key: 'unverified' as const,
+        labelKey: 'admin.users.search.unverified',
+        count: unverifiedCount,
+        percent: total > 0 ? Math.round((unverifiedCount / total) * 100) : 0,
+      },
+    ];
+  });
+
+  readonly monthlySignups = computed(() => {
+    const language = this.translation.language();
+    const now = new Date();
+    const buckets = Array.from({ length: this.chartMonthCount }, (_, index) => {
+      const offset = this.chartMonthCount - 1 - index;
+      const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      const key = this.getMonthKey(date);
+      return {
+        key,
+        label: this.formatMonthLabel(date, language),
+        count: 0,
+        percent: 0,
+      };
+    });
+
+    const counts = new Map<string, number>();
+    for (const user of this.users()) {
+      const createdDate = this.parseDate(user.createdAt);
+      if (!createdDate) continue;
+      const key = this.getMonthKey(createdDate);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+
+    let maxCount = 0;
+    for (const bucket of buckets) {
+      const count = counts.get(bucket.key) ?? 0;
+      bucket.count = count;
+      maxCount = Math.max(maxCount, count);
+    }
+
+    const safeMax = Math.max(maxCount, 1);
+    for (const bucket of buckets) {
+      bucket.percent = Math.round((bucket.count / safeMax) * 100);
+    }
+
+    return buckets;
   });
 
   readonly filteredUsers = computed(() => {
@@ -261,6 +340,13 @@ export class UsersComponent implements OnInit {
     return date.toLocaleDateString();
   }
 
+  formatUsername(value: string | null | undefined): string {
+    if (!value) return '-';
+    const trimmed = value.trim();
+    if (!trimmed) return '-';
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+  }
+
   private getSortableValue(
     user: AuthUser,
     key: Exclude<ReturnType<typeof this.sortKey>, null>
@@ -329,7 +415,7 @@ export class UsersComponent implements OnInit {
       }
 
       if (Array.isArray(parsed.selectedVerification)) {
-        const allowedVerification: Array<'verified' | 'unverified'> = [
+        const allowedVerification: ('verified' | 'unverified')[] = [
           'verified',
           'unverified',
         ];
@@ -364,13 +450,36 @@ export class UsersComponent implements OnInit {
     const originalUser = this.selectedUserForEdit();
     if (!originalUser) return;
 
+    // Username: only letters and numbers
+    const usernamePattern = /^[a-zA-Z0-9]+$/;
     const normalizedUsername = this.normalizeUsername(updatedUser.username);
+    if (normalizedUsername && !usernamePattern.test(normalizedUsername)) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.usernameInvalid')
+      );
+      return;
+    }
     if (
       normalizedUsername &&
       this.isUsernameTaken(normalizedUsername, originalUser.uuid)
     ) {
       this.error.set(
         this.translation.translate('admin.users.messages.usernameTaken')
+      );
+      return;
+    }
+
+    // Firstname/Lastname: allow Unicode letters, diacritics, hyphens, spaces and apostrophes
+    if (updatedUser.firstName && !this.isNameValid(updatedUser.firstName)) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.firstnameInvalid')
+      );
+      return;
+    }
+
+    if (updatedUser.lastName && !this.isNameValid(updatedUser.lastName)) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.lastnameInvalid')
       );
       return;
     }
@@ -428,6 +537,20 @@ export class UsersComponent implements OnInit {
     return value?.trim().toLowerCase() ?? '';
   }
 
+  // Validate names with Unicode-aware regex when available; fallback to
+  // accented Latin-range. Allows letters, combining marks, spaces, hyphens and apostrophes.
+  private isNameValid(value: string | null | undefined): boolean {
+    const normalized = value?.trim() ?? '';
+    if (!normalized) return false;
+    try {
+      const pattern = /^\p{L}[\p{L}\p{M}' \-]*$/u;
+      return pattern.test(normalized);
+    } catch (e) {
+      const fallback = /^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ' \-]*$/;
+      return fallback.test(normalized);
+    }
+  }
+
   private isUsernameTaken(
     normalizedUsername: string,
     currentUuid: string
@@ -437,5 +560,22 @@ export class UsersComponent implements OnInit {
         user.uuid !== currentUuid &&
         this.normalizeUsername(user.username) === normalizedUsername
     );
+  }
+
+  private parseDate(value: string | null | undefined): Date | null {
+    if (!value) return null;
+    const timestamp = Date.parse(value);
+    if (Number.isNaN(timestamp)) return null;
+    return new Date(timestamp);
+  }
+
+  private getMonthKey(date: Date): string {
+    return `${date.getFullYear()}-${date.getMonth()}`;
+  }
+
+  private formatMonthLabel(date: Date, language: 'en' | 'sv'): string {
+    return date.toLocaleString(language === 'sv' ? 'sv-SE' : 'en-US', {
+      month: 'short',
+    });
   }
 }

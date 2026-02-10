@@ -1,4 +1,4 @@
-import { UuidService } from './uuid.service';
+import { UuidService } from './uuid.service.js';
 
 describe('UuidService', () => {
   let service: UuidService;

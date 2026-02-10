@@ -5,9 +5,9 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { Role } from '../enums/role.enum';
-import { AuthUser } from 'auth/interfaces/auth-user.interface';
+import { ROLES_KEY } from '../decorators/roles.decorator.js';
+import { Role } from '../enums/role.enum.js';
+import { AuthUser } from '../interfaces/auth-user.interface.js';
 
 interface AuthRequest extends Request {
   user?: AuthUser;

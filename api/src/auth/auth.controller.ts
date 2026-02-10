@@ -3,40 +3,79 @@ import {
   Post,
   HttpCode,
   HttpStatus,
-  Headers,
+  Body,
+  Res,
+  Req,
+  BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { Request, Response } from 'express';
+import type { QueryResult } from 'pg';
+import { authDatabase } from './auth.js';
+import { LoginDto } from './dto/login.dto.js';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Headers('authorization') authHeader: string) {
-    if (!authHeader || !authHeader.startsWith('Basic ')) {
-      throw new UnauthorizedException(
-        'Missing or invalid authorization header',
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+  ): Promise<unknown> {
+    const identifier = loginDto.identifier?.trim();
+    const password = loginDto.password?.trim();
+
+    if (!identifier || !password) {
+      throw new BadRequestException('Missing login credentials');
+    }
+
+    let email = identifier;
+    if (!identifier.includes('@')) {
+      const result: QueryResult<{ email: string }> = await authDatabase.query(
+        'SELECT "email" FROM "user" WHERE LOWER("username") = $1 LIMIT 1',
+        [identifier.toLowerCase()],
       );
+      email = result.rows[0]?.email;
+      if (!email) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
     }
 
-    const base64Credentials = authHeader.substring(6);
-    const credentials = Buffer.from(base64Credentials, 'base64').toString(
-      'utf-8',
-    );
-    const [username, password] = credentials.split(':');
+    const baseUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+    const origin = req.headers.origin ?? baseUrl;
+    const response = await fetch(new URL('/api/auth/sign-in/email', baseUrl), {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        origin,
+      },
+      body: JSON.stringify({ email, password, rememberMe: true }),
+    });
 
-    if (!username || !password) {
-      throw new UnauthorizedException('Invalid credentials format');
+    const setCookie = response.headers.get('set-cookie');
+    if (setCookie) {
+      res.setHeader('set-cookie', setCookie);
     }
 
-    const loginDto: LoginDto = { username, password };
-    const user = this.authService.validateUser(loginDto);
-    return {
-      success: true,
-      user,
-    };
+    let payload: unknown = {};
+    try {
+      payload = await response.json();
+    } catch {
+      payload = {};
+    }
+
+    if (!response.ok) {
+      let message = 'Invalid credentials';
+      if (payload && typeof payload === 'object' && 'message' in payload) {
+        const maybe = payload as Record<string, unknown>;
+        if (typeof maybe.message === 'string') {
+          message = maybe.message;
+        }
+      }
+      throw new UnauthorizedException(message);
+    }
+
+    return payload;
   }
 }

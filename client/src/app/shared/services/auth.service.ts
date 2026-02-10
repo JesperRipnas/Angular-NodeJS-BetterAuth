@@ -1,13 +1,21 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
-import { Observable, tap, catchError, finalize } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { createAuthClient } from 'better-auth/client';
+import {
+  Observable,
+  from,
+  switchMap,
+  tap,
+  catchError,
+  finalize,
+  throwError,
+} from 'rxjs';
 import { AuthUser } from '../../auth/models/auth-user.model';
-import { AuthCookie } from '../../auth/models/auth-cookie.model';
+import { Role } from '../../auth/models/role.enum';
 import { environment } from '../../../environments/environment';
-import { AUTH_CREDENTIALS } from '../interceptors/auth.interceptor';
 
 interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -28,20 +36,23 @@ interface SignupRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly COOKIE_NAME = 'auth_session';
-  private readonly SESSION_DURATION = 60 * 60 * 1000; // 60 minutes in milliseconds
-  private readonly CONSENT_KEY = 'cookie_consent';
-  private readonly API_URL = `${environment.apiUrl}/auth`;
-
   private readonly http = inject(HttpClient);
+  private readonly authClient = createAuthClient({
+    baseURL: `${environment.apiUrl}/api/auth`,
+    fetchOptions: {
+      credentials: 'include',
+    },
+  });
 
   private readonly _isLoggedIn = signal(false);
   private readonly _user = signal<AuthUser | null>(null);
   private readonly _isLoading = signal(false);
   private readonly _error = signal<string | null>(null);
+  private readonly _initialSessionResolved = signal(false);
+  private readonly _hadSessionOnInit = signal(false);
 
   constructor() {
-    this.restoreSession();
+    void this.restoreSession();
   }
 
   isLoggedIn(): boolean {
@@ -52,9 +63,6 @@ export class AuthService {
     this._isLoggedIn.set(value);
     if (!value) {
       this._user.set(null);
-      this.clearCookie();
-    } else {
-      this.saveToCookie();
     }
   }
 
@@ -68,7 +76,6 @@ export class AuthService {
 
   setUser(user: AuthUser): void {
     this._user.set(user);
-    this.saveToCookie();
   }
 
   isLoading(): boolean {
@@ -83,26 +90,46 @@ export class AuthService {
     this._error.set(null);
   }
 
+  initialSessionResolved(): boolean {
+    return this._initialSessionResolved();
+  }
+
+  hadSessionOnInit(): boolean {
+    return this._hadSessionOnInit();
+  }
+
   login(loginRequest: LoginRequest): Observable<LoginResponse> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const context = new HttpContext().set(AUTH_CREDENTIALS, loginRequest);
-
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/login`, {}, { context })
+      .post<unknown>(
+        `${environment.apiUrl}/auth/login`,
+        {
+          identifier: loginRequest.email,
+          password: loginRequest.password,
+        },
+        { withCredentials: true }
+      )
       .pipe(
+        switchMap((response) => {
+          return from(this.syncSession()).pipe(
+            switchMap((user) => {
+              if (!user) {
+                return throwError(() => new Error('Missing session user'));
+              }
+
+              return from([{ success: true, user }]);
+            })
+          );
+        }),
         tap((response) => {
-          if (response.success && response.user) {
-            this.setLoggedIn(true);
-            this.setUser(response.user);
-          } else {
-            this._error.set('auth.errors.invalidCredentials');
-          }
+          this.setLoggedIn(true);
+          this.setUser(response.user);
         }),
         catchError((error) => {
-          this._error.set('auth.errors.loginFailed');
-          throw error;
+          this._error.set('auth.errors.invalidCredentials');
+          return throwError(() => error);
         }),
         finalize(() => this._isLoading.set(false))
       );
@@ -112,93 +139,101 @@ export class AuthService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const context = new HttpContext().set(AUTH_CREDENTIALS, {
-      username: signupRequest.username,
-      password: signupRequest.password,
-    });
+    const fullName =
+      `${signupRequest.firstName} ${signupRequest.lastName}`.trim();
 
-    const signupData = {
+    const signUpPayload = {
+      name: fullName,
+      email: signupRequest.email,
+      password: signupRequest.password,
+      username: signupRequest.username,
       firstName: signupRequest.firstName,
       lastName: signupRequest.lastName,
-      email: signupRequest.email,
       birthDate: signupRequest.birthDate,
       gender: signupRequest.gender,
-    };
+    } as Parameters<typeof this.authClient.signUp.email>[0];
 
-    return this.http
-      .post<LoginResponse>(`${this.API_URL}/signup`, signupData, { context })
-      .pipe(
-        tap((response) => {
-          if (response.success && response.user) {
-            this.setLoggedIn(true);
-            this.setUser(response.user);
-          } else {
-            this._error.set('auth.errors.signupFailed');
-          }
-        }),
-        catchError(() => {
-          this._error.set('auth.errors.signupFailed');
-          throw new Error('Signup failed');
-        }),
-        finalize(() => this._isLoading.set(false))
-      );
+    return from(this.authClient.signUp.email(signUpPayload)).pipe(
+      switchMap((response) => {
+        if (response.error) {
+          return throwError(() => new Error(response.error.message));
+        }
+
+        return from(this.syncSession()).pipe(
+          switchMap((user) => {
+            if (!user) {
+              return throwError(() => new Error('Missing session user'));
+            }
+
+            return from([{ success: true, user }]);
+          })
+        );
+      }),
+      tap((response) => {
+        this.setLoggedIn(true);
+        this.setUser(response.user);
+      }),
+      catchError((error) => {
+        this._error.set('auth.errors.signupFailed');
+        return throwError(() => error);
+      }),
+      finalize(() => this._isLoading.set(false))
+    );
   }
 
   logout(): void {
+    void this.authClient.signOut();
     this.setLoggedIn(false);
   }
 
-  private restoreSession(): void {
-    const cookieData = this.getCookie();
-    if (cookieData && cookieData.expiresAt > Date.now()) {
-      this._isLoggedIn.set(cookieData.isLoggedIn);
-      this._user.set(cookieData.user);
-    } else {
-      this.clearCookie();
-    }
+  private async restoreSession(): Promise<void> {
+    const user = await this.syncSession();
+    this._hadSessionOnInit.set(Boolean(user));
+    this._initialSessionResolved.set(true);
   }
 
-  private saveToCookie(): void {
-    if (!this.hasCookieConsent()) {
-      return;
+  private async syncSession(): Promise<AuthUser | null> {
+    const { data, error } = await this.authClient.getSession();
+    if (error || !data?.user) {
+      this._isLoggedIn.set(false);
+      this._user.set(null);
+      return null;
     }
 
-    // FAKE DATA FOR TESTING PURPOSES ONLY, WILL BE SESSION KEY OR TOKEN IN REAL IMPLEMENTATION
-    const data: AuthCookie = {
-      isLoggedIn: this._isLoggedIn(),
-      user: this._user(),
-      expiresAt: Date.now() + this.SESSION_DURATION,
+    const mappedUser = this.mapUser(data.user as Record<string, unknown>);
+    this._isLoggedIn.set(true);
+    this._user.set(mappedUser);
+    return mappedUser;
+  }
+
+  private mapUser(user: Record<string, unknown>): AuthUser {
+    const name = (user['name'] as string | undefined) ?? '';
+    const [firstName, ...restName] = name.split(' ').filter(Boolean);
+    const lastName = restName.join(' ');
+
+    return {
+      uuid: (user['id'] as string) ?? '',
+      username: (user['username'] as string) ?? (user['email'] as string) ?? '',
+      email: (user['email'] as string) ?? '',
+      firstName: (user['firstName'] as string) ?? firstName ?? '',
+      lastName: (user['lastName'] as string) ?? lastName ?? '',
+      birthDate: (user['birthDate'] as string) ?? '',
+      createdAt: this.normalizeDate(user['createdAt']),
+      updatedAt: this.normalizeDate(user['updatedAt']),
+      verifiedEmail: (user['emailVerified'] as boolean) ?? false,
+      role: (user['role'] as Role) ?? Role.USER,
     };
-
-    const expires = new Date(data.expiresAt);
-    document.cookie = `${this.COOKIE_NAME}=${encodeURIComponent(
-      JSON.stringify(data)
-    )}; expires=${expires.toUTCString()}; path=/; SameSite=Strict; Secure`;
   }
 
-  private getCookie(): AuthCookie | null {
-    const name = this.COOKIE_NAME + '=';
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookies = decodedCookie.split(';');
-
-    for (let cookie of cookies) {
-      cookie = cookie.trim();
-      if (cookie.indexOf(name) === 0) {
-        try {
-          return JSON.parse(cookie.substring(name.length));
-        } catch {
-          return null;
-        }
-      }
+  private normalizeDate(value: unknown): string {
+    if (!value) {
+      return '';
     }
-    return null;
-  }
 
-  private clearCookie(): void {
-    document.cookie = `${this.COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
-  }
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
 
-  private hasCookieConsent(): boolean {
-    return localStorage.getItem(this.CONSENT_KEY) === 'true';
+    return String(value);
   }
 }

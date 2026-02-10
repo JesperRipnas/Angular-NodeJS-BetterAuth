@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
-import { AuthUser } from './interfaces/auth-user.interface';
-import { Role } from './enums/role.enum';
+import { LoginDto } from './dto/login.dto.js';
+import { AuthUser } from './interfaces/auth-user.interface.js';
+import { Role } from './enums/role.enum.js';
 
 interface MockUser extends AuthUser {
   password: string;
@@ -10,7 +10,8 @@ interface MockUser extends AuthUser {
 @Injectable()
 export class AuthService {
   validateUser(loginDto: LoginDto): AuthUser {
-    const { username, password } = loginDto;
+    const { identifier, password } = loginDto;
+    const normalizedIdentifier = identifier.trim().toLowerCase();
 
     // MOCK USERS, REPLACE WITH FIREBASE LOGIC LATER
     const mockUsers: MockUser[] = [
@@ -55,9 +56,13 @@ export class AuthService {
       },
     ];
 
-    const match = mockUsers.find(
-      (user) => user.username === username && user.password === password,
-    );
+    const match = mockUsers.find((user) => {
+      const matchesIdentifier =
+        user.username.toLowerCase() === normalizedIdentifier ||
+        user.email.toLowerCase() === normalizedIdentifier;
+
+      return matchesIdentifier && user.password === password;
+    });
 
     if (match) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

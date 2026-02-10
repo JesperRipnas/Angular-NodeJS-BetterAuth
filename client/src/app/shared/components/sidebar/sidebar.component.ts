@@ -3,6 +3,8 @@ import {
   Component,
   computed,
   inject,
+  input,
+  output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
@@ -35,6 +37,8 @@ interface MenuSection {
 export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  mobileOpen = input(false);
+  closeMobile = output<void>();
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -104,11 +108,23 @@ export class SidebarComponent {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
+    this.emitCloseIfMobile();
   }
 
   handleItemClick(item: MenuItem): void {
     if (item.route) {
       this.router.navigate([item.route]);
+      this.emitCloseIfMobile();
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.closeMobile.emit();
+  }
+
+  private emitCloseIfMobile(): void {
+    if (this.mobileOpen()) {
+      this.closeMobile.emit();
     }
   }
 }

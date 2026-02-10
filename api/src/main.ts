@@ -1,9 +1,14 @@
+import './env.js';
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { AppsModule } from './apps.module';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './auth/auth.js';
+import { AppsModule } from './apps.module.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppsModule);
+  const app = await NestFactory.create(AppsModule, {
+    bodyParser: false,
+  });
 
   app.enableCors({
     origin: 'http://localhost:4200',
@@ -13,6 +18,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
+
+  app.use('/api/auth', toNodeHandler(auth));
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

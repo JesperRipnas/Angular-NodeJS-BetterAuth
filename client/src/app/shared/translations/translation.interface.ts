@@ -8,6 +8,8 @@ export interface Translation {
     signup: string;
     yes: string;
     no: string;
+    openMenu: string;
+    closeMenu: string;
     pagination: {
       previous: string;
       next: string;
@@ -29,6 +31,9 @@ export interface Translation {
     orContinueWith: string;
     errors: {
       invalidEmail: string;
+      emailTaken: string;
+      usernameTaken: string;
+      passwordTooShort: string;
       invalidCredentials: string;
       loginFailed: string;
       signupFailed: string;
@@ -94,6 +99,21 @@ export interface Translation {
     users: {
       title: string;
       subtitle: string;
+      analytics: {
+        title: string;
+        subtitle: string;
+        totalUsers: string;
+        paymentTiers: string;
+        tierFree: string;
+        tierStarter: string;
+        tierPro: string;
+        tierEnterprise: string;
+        signupsLastMonths: string;
+        premiumUsersPlaceholder: string;
+        earningsPlaceholder: string;
+        earningsLast30Days: string;
+        earningsLast6Months: string;
+      };
       filters: {
         show: string;
         hide: string;
@@ -145,6 +165,9 @@ export interface Translation {
         confirmDelete: string;
         usernameTaken: string;
         usernameUniqueHint: string;
+        usernameInvalidHint: string;
+        firstnameInvalidHint: string;
+        lastnameInvalidHint: string;
         emailInvalidHint: string;
       };
       roles: {

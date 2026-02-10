@@ -5,14 +5,18 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   private readonly logger = new Logger('HTTP');
-  private readonly enableLogs: boolean = false;
+  private readonly enableLogs: boolean;
 
   constructor(private readonly configService: ConfigService) {
-    // this.enableLogs = this.configService.get('ENABLE_HTTP_LOGS') ?? false;
+    const value = this.configService.get<string | boolean>('ENABLE_HTTP_LOGS');
+    this.enableLogs = value !== false && value !== 'false';
   }
 
   use(req: Request, res: Response, next: NextFunction): void {
-    // if (!this.enableLogs) return next();
+    if (!this.enableLogs) {
+      next();
+      return;
+    }
     const { method, originalUrl } = req;
     const clientIp = this.getClientIp(req);
     const start = Date.now();

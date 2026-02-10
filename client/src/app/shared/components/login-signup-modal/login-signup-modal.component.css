@@ -93,6 +93,35 @@
   box-sizing: border-box;
 }
 
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input {
+  padding-right: 2.25rem;
+}
+
+.status-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: default;
+}
+
+.status-icon.is-valid {
+  color: #16a34a;
+}
+
+.status-icon.is-invalid {
+  color: #dc2626;
+  cursor: pointer;
+}
+
 .form-group select {
   width: 100%;
   padding: 0.5rem 0.75rem;

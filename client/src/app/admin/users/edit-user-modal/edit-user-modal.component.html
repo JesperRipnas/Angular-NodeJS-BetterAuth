@@ -38,7 +38,7 @@
                 [attr.title]="
                   usernameStatus() === 'invalid'
                     ? translation.translate(
-                        'admin.users.messages.usernameUniqueHint'
+                        'admin.users.messages.usernameInvalidHint'
                       )
                     : null
                 "
@@ -54,24 +54,62 @@
           <label for="firstName">{{
             translation.translate('admin.users.modal.firstName')
           }}</label>
-          <input
-            type="text"
-            id="firstName"
-            [value]="formData()?.firstName ?? ''"
-            (change)="updateField('firstName', $any($event.target).value)"
-          />
+          <div class="input-with-icon">
+            <input
+              type="text"
+              id="firstName"
+              [value]="formData()?.firstName ?? ''"
+              (input)="onFirstNameInput($any($event.target).value)"
+            />
+            @if (firstNameStatus() !== 'idle') {
+              <span
+                class="status-icon"
+                [class.is-valid]="firstNameStatus() === 'valid'"
+                [class.is-invalid]="firstNameStatus() === 'invalid'"
+                [attr.title]="
+                  firstNameStatus() === 'invalid'
+                    ? translation.translate(
+                        'admin.users.messages.firstnameInvalidHint'
+                      )
+                    : null
+                "
+                aria-hidden="true"
+              >
+                {{ firstNameStatus() === 'valid' ? '✓' : '✕' }}
+              </span>
+            }
+          </div>
         </div>
 
         <div class="form-group">
           <label for="lastName">{{
             translation.translate('admin.users.modal.lastName')
           }}</label>
-          <input
-            type="text"
-            id="lastName"
-            [value]="formData()?.lastName ?? ''"
-            (change)="updateField('lastName', $any($event.target).value)"
-          />
+          <div class="input-with-icon">
+            <input
+              type="text"
+              id="lastName"
+              [value]="formData()?.lastName ?? ''"
+              (input)="onLastNameInput($any($event.target).value)"
+            />
+            @if (lastNameStatus() !== 'idle') {
+              <span
+                class="status-icon"
+                [class.is-valid]="lastNameStatus() === 'valid'"
+                [class.is-invalid]="lastNameStatus() === 'invalid'"
+                [attr.title]="
+                  lastNameStatus() === 'invalid'
+                    ? translation.translate(
+                        'admin.users.messages.lastnameInvalidHint'
+                      )
+                    : null
+                "
+                aria-hidden="true"
+              >
+                {{ lastNameStatus() === 'valid' ? '✓' : '✕' }}
+              </span>
+            }
+          </div>
         </div>
 
         <div class="form-group">
@@ -157,9 +195,7 @@
             type="button"
             class="btn btn-save"
             (click)="onSave()"
-            [disabled]="
-              usernameStatus() === 'invalid' || emailStatus() === 'invalid'
-            "
+            [disabled]="!isModalValid()"
           >
             {{ translation.translate('admin.users.buttons.save') }}
           </button>

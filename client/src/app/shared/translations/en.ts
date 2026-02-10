@@ -10,6 +10,8 @@ export const en: Translation = {
     signup: 'Sign up',
     yes: 'Yes',
     no: 'No',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
     pagination: {
       previous: 'Previous',
       next: 'Next',
@@ -31,6 +33,9 @@ export const en: Translation = {
     orContinueWith: 'Or continue with',
     errors: {
       invalidEmail: 'Please enter a valid email address',
+      emailTaken: 'Email is already in use',
+      usernameTaken: 'Username is already in use',
+      passwordTooShort: 'Password must be at least 6 characters',
       invalidCredentials: 'Invalid credentials. Please try again!',
       loginFailed: 'Login failed. Please try again.',
       signupFailed: 'Signup failed. Please try again.',
@@ -97,6 +102,21 @@ export const en: Translation = {
     users: {
       title: 'User Management',
       subtitle: 'Manage your users and their roles',
+      analytics: {
+        title: 'User insights',
+        subtitle: 'Snapshot of role mix and activity',
+        totalUsers: 'Total users',
+        paymentTiers: 'Payment tiers',
+        tierFree: 'Free',
+        tierStarter: 'Starter',
+        tierPro: 'Pro',
+        tierEnterprise: 'Enterprise',
+        signupsLastMonths: 'New users (last 6 months)',
+        premiumUsersPlaceholder: 'Premium users (placeholder)',
+        earningsPlaceholder: 'Earnings (last 30 days & 6 months) (placeholder)',
+        earningsLast30Days: 'Last 30 days',
+        earningsLast6Months: 'Last 6 months',
+      },
       filters: {
         show: 'Show filters',
         hide: 'Hide filters',
@@ -148,6 +168,9 @@ export const en: Translation = {
         confirmDelete: 'Are you sure you want to delete this user?',
         usernameTaken: 'Username is already in use',
         usernameUniqueHint: 'Username must be unique',
+        usernameInvalidHint: 'Username can only contain letters and numbers',
+        firstnameInvalidHint: 'First name can only contain letters (A-Ö)',
+        lastnameInvalidHint: 'Last name can only contain letters (A-Ö)',
         emailInvalidHint: 'Enter a valid email address',
       },
       roles: {

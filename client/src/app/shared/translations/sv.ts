@@ -10,6 +10,8 @@ export const sv: Translation = {
     signup: 'Registrera',
     yes: 'Ja',
     no: 'Nej',
+    openMenu: 'Öppna meny',
+    closeMenu: 'Stäng meny',
     pagination: {
       previous: 'Föregående',
       next: 'Nästa',
@@ -31,6 +33,9 @@ export const sv: Translation = {
     orContinueWith: 'Eller fortsätt med',
     errors: {
       invalidEmail: 'Vänligen ange en giltig e-postadress',
+      emailTaken: 'E-postadressen används redan',
+      usernameTaken: 'Användarnamnet används redan',
+      passwordTooShort: 'Lösenordet måste vara minst 6 tecken',
       invalidCredentials: 'Ogiltiga autentiseringsuppgifter. Försök igen!',
       loginFailed: 'Inloggningen misslyckades. Försök igen.',
       signupFailed: 'Registreringen misslyckades. Försök igen.',
@@ -97,6 +102,22 @@ export const sv: Translation = {
     users: {
       title: 'Användarhantering',
       subtitle: 'Hantera dina användare och deras roller',
+      analytics: {
+        title: 'Användarinsikter',
+        subtitle: 'Översikt av roller och aktivitet',
+        totalUsers: 'Totalt antal användare',
+        paymentTiers: 'Betalnivåer',
+        tierFree: 'Gratis',
+        tierStarter: 'Start',
+        tierPro: 'Pro',
+        tierEnterprise: 'Enterprise',
+        signupsLastMonths: 'Nya användare (senaste 6 månaderna)',
+        premiumUsersPlaceholder: 'Premiumanvändare (platshållare)',
+        earningsPlaceholder:
+          'Intäkter (senaste 30 dagarna & 6 månaderna) (platshållare)',
+        earningsLast30Days: 'Senaste 30 dagarna',
+        earningsLast6Months: 'Senaste 6 månaderna',
+      },
       filters: {
         show: 'Visa filter',
         hide: 'Dölj filter',
@@ -149,6 +170,10 @@ export const sv: Translation = {
         confirmDelete: 'Är du säker på att du vill radera denna användare?',
         usernameTaken: 'Användarnamnet används redan',
         usernameUniqueHint: 'Användarnamnet måste vara unikt',
+        usernameInvalidHint:
+          'Användarnamn får endast innehålla bokstäver och siffror',
+        firstnameInvalidHint: 'Förnamn får endast innehålla bokstäver (A-Ö)',
+        lastnameInvalidHint: 'Efternamn får endast innehålla bokstäver (A-Ö)',
         emailInvalidHint: 'Ange en giltig e-postadress',
       },
       roles: {

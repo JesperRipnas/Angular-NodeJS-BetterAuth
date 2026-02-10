@@ -21,3 +21,13 @@
   background-color: #111827;
   color: #e2e8f0;
 }
+
+@media (max-width: 768px) {
+  :host:has(app-sidebar .sidebar.visible) .main-content {
+    margin-left: 0;
+  }
+
+  .main-content {
+    margin-top: 0;
+  }
+}

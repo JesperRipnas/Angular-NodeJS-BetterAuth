@@ -1,10 +1,15 @@
 <app-header
   [isLoggedIn]="isLoggedIn()"
+  [isMenuOpen]="isMobileMenuOpen()"
+  (menuClick)="toggleMobileMenu()"
   (loginClick)="toggleAuthModal()"
   (profileClick)="goToProfile()"
 ></app-header>
 
-<app-sidebar></app-sidebar>
+<app-sidebar
+  [mobileOpen]="isMobileMenuOpen()"
+  (closeMobile)="closeMobileMenu()"
+></app-sidebar>
 
 <main class="main-content">
   <router-outlet></router-outlet>
