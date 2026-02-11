@@ -348,7 +348,10 @@
                   }}</span>
                 </button>
               </th>
-              <th [attr.aria-sort]="getAriaSort('verifiedEmail')">
+              <th
+                class="col-center"
+                [attr.aria-sort]="getAriaSort('verifiedEmail')"
+              >
                 <button
                   type="button"
                   class="sort-button"
@@ -360,7 +363,7 @@
                   }}</span>
                 </button>
               </th>
-              <th [attr.aria-sort]="getAriaSort('role')">
+              <th class="col-center" [attr.aria-sort]="getAriaSort('role')">
                 <button
                   type="button"
                   class="sort-button"
@@ -439,11 +442,47 @@
                     }}
                   </td>
                   <td>
-                    {{
-                      user.verifiedEmail
-                        ? translation.translate('shared.yes')
-                        : translation.translate('shared.no')
-                    }}
+                    @if (user.verifiedEmail) {
+                      <span
+                        class="verified-icon verified-yes"
+                        [attr.aria-label]="
+                          translation.translate('admin.users.search.verified')
+                        "
+                        [attr.title]="
+                          translation.translate('admin.users.search.verified')
+                        "
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                          />
+                        </svg>
+                      </span>
+                    } @else {
+                      <span
+                        class="verified-icon verified-no"
+                        [attr.aria-label]="
+                          translation.translate('admin.users.search.unverified')
+                        "
+                        [attr.title]="
+                          translation.translate('admin.users.search.unverified')
+                        "
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.7 2.88 18.29 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.88 4.3z"
+                          />
+                        </svg>
+                      </span>
+                    }
                   </td>
                   <td>
                     @if (editingRow() === user.uuid) {

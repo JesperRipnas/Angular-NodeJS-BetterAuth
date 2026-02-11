@@ -1,5 +1,5 @@
 .users-container {
-  padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+  padding: 1.5rem;
   /* Center container and constrain width for better layout */
   max-width: 100%;
   width: 100%;
@@ -611,43 +611,70 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: transparent;
-  table-layout: auto;
+  /* Use fixed layout so column widths remain stable when content changes (sorting, icons, etc.) */
+  table-layout: fixed;
 }
 
 .col-created {
-  width: 8%;
+  width: 13rem;
+  min-width: 13rem;
+  max-width: 13rem;
 }
 
 .col-updated {
-  width: 8%;
+  width: 13rem;
+  min-width: 13rem;
+  max-width: 13rem;
 }
 
 .col-verified {
-  width: 8%;
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
 }
 
 .col-role {
-  width: 8%;
+  width: 7.5rem;
+  min-width: 7.5rem;
+  max-width: 7.5rem;
 }
 
 .col-username {
-  width: 12%;
+  width: 10rem;
+  min-width: 8rem;
+  max-width: 14rem;
 }
 
 .col-first-name {
-  width: 8%;
+  width: 8rem;
+  min-width: 7rem;
+  max-width: 10rem;
 }
 
 .col-last-name {
-  width: 8%;
+  width: 8rem;
+  min-width: 7rem;
+  max-width: 10rem;
 }
 
 .col-email {
-  width: auto;
+  width: 1fr;
+  min-width: 18rem;
+  max-width: 36rem;
 }
 
 .col-actions {
   width: 7.5rem;
+  min-width: 7.5rem;
+  max-width: 7.5rem;
+}
+
+/* Make table cells truncate with ellipsis to avoid layout shifts */
+.users-table table th,
+.users-table table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 :host-context(.dark) table {
@@ -682,17 +709,40 @@ th {
   width: 100%;
 }
 
+/* Center only the sort indicator while keeping the header label readable */
+.col-center .sort-button {
+  /* Make the button fill the header cell and keep its label centered. */
+  position: relative;
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0.6rem;
+}
+
+/* Place the sort indicator at the right edge of the centered header */
+.col-center .sort-button .sort-indicator {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 :host-context(.dark) th {
   color: #e2e8f0;
 }
 
 .sort-button {
+  /* Make sort-button span the full header so the indicator can be anchored to the right.
+     Default: left-aligned headers keep label at start; centered headers are handled by .col-center override. */
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   border: none;
   background: transparent;
-  padding: 0;
+  width: 100%;
+  justify-content: flex-start;
   font: inherit;
   color: inherit;
   cursor: pointer;
@@ -702,6 +752,10 @@ th {
   min-width: 0.75rem;
   font-size: 0.75rem;
   color: #94a3b8;
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 :host-context(.dark) .sort-indicator {
@@ -1100,4 +1154,41 @@ select.invalid {
 
 :host-context(.dark) .no-results {
   color: #9ca3af;
+}
+
+/* Verified icon styles */
+.verified-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.verified-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.verified-yes {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.06);
+}
+
+.verified-no {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
+}
+
+:host-context(.dark) .verified-yes {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.06);
+}
+
+:host-context(.dark) .verified-no {
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.06);
 }
