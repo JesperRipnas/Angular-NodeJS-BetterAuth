@@ -120,6 +120,7 @@ export interface Translation {
       filters: {
         show: string;
         hide: string;
+        clear: string;
       };
       search: {
         label: string;

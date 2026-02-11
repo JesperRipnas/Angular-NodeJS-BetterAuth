@@ -123,6 +123,7 @@ export const en: Translation = {
       filters: {
         show: 'Show filters',
         hide: 'Hide filters',
+        clear: 'Clear filters',
       },
       search: {
         label: 'Search users',

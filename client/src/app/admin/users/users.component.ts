@@ -294,6 +294,13 @@ export class UsersComponent implements OnInit {
     this.showFilters.update((value) => !value);
   }
 
+  clearFilters(): void {
+    this.selectedRoles.set(this.roleOptions.map((option) => option.value));
+    this.selectedVerification.set(['verified', 'unverified']);
+    this.pageIndex.set(1);
+    this.persistFilters();
+  }
+
   toggleVerification(value: 'verified' | 'unverified', checked: boolean): void {
     this.selectedVerification.update((current) => {
       if (checked) {
@@ -551,7 +558,9 @@ export class UsersComponent implements OnInit {
   startDeleteConfirm(user: AuthUser): void {
     if (this.isLastAdmin(user)) {
       this.error.set(
-        this.translation.translate('admin.users.messages.lastAdminDeleteProtection')
+        this.translation.translate(
+          'admin.users.messages.lastAdminDeleteProtection'
+        )
       );
       return;
     }
@@ -571,7 +580,9 @@ export class UsersComponent implements OnInit {
     if (!userToDelete) return;
     if (this.isLastAdmin(userToDelete)) {
       this.error.set(
-        this.translation.translate('admin.users.messages.lastAdminDeleteProtection')
+        this.translation.translate(
+          'admin.users.messages.lastAdminDeleteProtection'
+        )
       );
       this.deletingRow.set(null);
       return;

@@ -394,6 +394,12 @@
   align-items: center;
 }
 
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .search-input-wrapper {
   position: relative;
   display: flex;
@@ -753,6 +759,7 @@ tbody tr:hover {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
+  min-width: 5rem;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -881,7 +888,6 @@ tbody tr:hover {
 }
 
 .btn-filter-toggle {
-  border: 1px solid #3b82f6;
   background: #ffffff;
   color: #2563eb;
   display: inline-flex;
@@ -889,7 +895,7 @@ tbody tr:hover {
   gap: 0.5rem;
   justify-content: center;
   height: 3rem;
-  min-width: 9rem;
+  min-width: 10rem;
   padding: 0 1rem;
   white-space: nowrap;
 }

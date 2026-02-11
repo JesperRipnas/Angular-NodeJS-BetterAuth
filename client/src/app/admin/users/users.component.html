@@ -215,26 +215,39 @@
               [attr.aria-describedby]="'user-search-help'"
             />
           </div>
-          <button
-            class="btn btn-filter-toggle"
-            type="button"
-            (click)="toggleFilters()"
-          >
-            <span class="filter-toggle-text">
-              {{
-                showFilters()
-                  ? translation.translate('admin.users.filters.hide')
-                  : translation.translate('admin.users.filters.show')
-              }}
-            </span>
-            <span
-              class="filter-toggle-icon"
-              [class.is-open]="showFilters()"
-              aria-hidden="true"
+          <div class="filter-buttons">
+            <button
+              class="btn btn-filter-toggle"
+              type="button"
+              (click)="clearFilters()"
+              aria-label="{{
+                translation.translate('admin.users.filters.clear')
+              }}"
             >
-              ▾
-            </span>
-          </button>
+              {{ translation.translate('admin.users.filters.clear') }}
+            </button>
+
+            <button
+              class="btn btn-filter-toggle"
+              type="button"
+              (click)="toggleFilters()"
+            >
+              <span class="filter-toggle-text">
+                {{
+                  showFilters()
+                    ? translation.translate('admin.users.filters.hide')
+                    : translation.translate('admin.users.filters.show')
+                }}
+              </span>
+              <span
+                class="filter-toggle-icon"
+                [class.is-open]="showFilters()"
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
