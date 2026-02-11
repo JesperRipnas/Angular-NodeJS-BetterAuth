@@ -12,6 +12,7 @@ export const sv: Translation = {
     signup: 'Registrera',
     yes: 'Ja',
     no: 'Nej',
+    confirm: 'Bekräfta',
     openMenu: 'Öppna meny',
     closeMenu: 'Stäng meny',
     pagination: {
@@ -149,6 +150,7 @@ export const sv: Translation = {
       buttons: {
         edit: 'Redigera',
         delete: 'Radera',
+        deleteUser: 'Radera användare',
         deleteConfirm: 'Bekräfta radering',
         save: 'Spara ändringar',
         cancel: 'Avbryt',

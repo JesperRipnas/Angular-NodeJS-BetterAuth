@@ -729,12 +729,24 @@ tbody tr:hover {
 .users-table table tr.editing-row {
   background: #eef2ff;
   transition: background-color 0.15s ease;
-  box-shadow: inset 10px 0 0 0 rgba(59, 130, 246, 0.12);
+  box-shadow: inset 10px 0 0 0 rgba(59, 130, 246, 0.5);
 }
 
 :host-context(.dark) .users-table table tr.editing-row {
   background: rgba(59, 130, 246, 0.06);
-  box-shadow: inset 10px 0 0 0 rgba(59, 130, 246, 0.22);
+  box-shadow: inset 10px 0 0 0 rgba(59, 130, 246, 0.5);
+}
+
+/* Highlight the row pending deletion with a red inset accent */
+.users-table table tr.deleting-row {
+  background: #fff5f5;
+  transition: background-color 0.15s ease;
+  box-shadow: inset 10px 0 0 0 rgba(220, 38, 38, 0.5);
+}
+
+:host-context(.dark) .users-table table tr.deleting-row {
+  background: rgba(220, 38, 38, 0.06);
+  box-shadow: inset 10px 0 0 0 rgba(220, 38, 38, 0.5);
 }
 
 .role-badge {

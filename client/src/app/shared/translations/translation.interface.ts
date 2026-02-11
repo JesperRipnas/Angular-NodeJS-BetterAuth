@@ -1,5 +1,6 @@
 export interface Translation {
   shared: {
+    confirm: string;
     loading: string;
     defaultError: string;
     login: string;
@@ -145,6 +146,7 @@ export interface Translation {
       buttons: {
         edit: string;
         delete: string;
+        deleteUser: string;
         deleteConfirm: string;
         save: string;
         cancel: string;

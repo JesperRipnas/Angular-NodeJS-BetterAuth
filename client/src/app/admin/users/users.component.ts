@@ -65,6 +65,7 @@ export class UsersComponent implements OnInit {
 
   // Inline edit state
   editingRow = signal<string | null>(null);
+  deletingRow = signal<string | null>(null);
   editedRow = signal<Partial<AuthUser>>({});
 
   readonly verificationOptions = [
@@ -519,9 +520,9 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(uuid: string): void {
+    // Backwards-compatible: keep existing behavior if called directly
     const userToDelete = this.users().find((u) => u.uuid === uuid);
     if (!userToDelete) return;
-
     if (this.isLastAdmin(userToDelete)) {
       this.error.set(
         this.translation.translate(
@@ -530,7 +531,6 @@ export class UsersComponent implements OnInit {
       );
       return;
     }
-
     if (
       confirm(this.translation.translate('admin.users.messages.confirmDelete'))
     ) {
@@ -546,6 +546,53 @@ export class UsersComponent implements OnInit {
         },
       });
     }
+  }
+
+  startDeleteConfirm(user: AuthUser): void {
+    if (this.isLastAdmin(user)) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.lastAdminDeleteProtection')
+      );
+      return;
+    }
+    // don't start delete confirmation while editing another row
+    if (this.editingRow()) return;
+    this.deletingRow.set(user.uuid);
+    this.error.set(null);
+  }
+
+  cancelDeleteConfirm(): void {
+    this.deletingRow.set(null);
+    this.error.set(null);
+  }
+
+  confirmDelete(uuid: string): void {
+    const userToDelete = this.users().find((u) => u.uuid === uuid);
+    if (!userToDelete) return;
+    if (this.isLastAdmin(userToDelete)) {
+      this.error.set(
+        this.translation.translate('admin.users.messages.lastAdminDeleteProtection')
+      );
+      this.deletingRow.set(null);
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.error.set(null);
+    this.usersService.deleteUser(uuid).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.deletingRow.set(null);
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Error deleting user:', err);
+        this.error.set(
+          this.translation.translate('admin.users.messages.deleteError')
+        );
+        this.isSaving.set(false);
+      },
+    });
   }
 
   startInlineEdit(user: AuthUser): void {

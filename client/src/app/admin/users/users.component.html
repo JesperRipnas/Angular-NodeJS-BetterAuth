@@ -413,7 +413,10 @@
           <tbody>
             @if (pagedUsers().length > 0) {
               @for (user of pagedUsers(); track user.uuid) {
-                <tr [class.editing-row]="editingRow() === user.uuid">
+                <tr
+                  [class.editing-row]="editingRow() === user.uuid"
+                  [class.deleting-row]="deletingRow() === user.uuid"
+                >
                   <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
                   <td class="date-cell">
                     {{
@@ -569,11 +572,52 @@
                             />
                           </svg>
                         </button>
+                      } @else if (deletingRow() === user.uuid) {
+                        <button
+                          class="icon-button icon-button-save"
+                          type="button"
+                          (click)="confirmDelete(user.uuid)"
+                          [disabled]="isSaving()"
+                          [attr.aria-label]="
+                            translation.translate('shared.confirm')
+                          "
+                          [attr.title]="translation.translate('shared.confirm')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button-cancel"
+                          type="button"
+                          (click)="cancelDeleteConfirm()"
+                          [disabled]="isSaving()"
+                          [attr.aria-label]="
+                            translation.translate('shared.cancel')
+                          "
+                          [attr.title]="translation.translate('shared.cancel')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.7 2.88 18.29 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.88 4.3z"
+                            />
+                          </svg>
+                        </button>
                       } @else {
                         <button
                           class="icon-button icon-button-edit"
                           (click)="startInlineEdit(user)"
-                          [disabled]="isSaving()"
+                          [disabled]="isSaving() || deletingRow()"
                           [attr.aria-label]="
                             translation.translate('admin.users.buttons.edit')
                           "
@@ -593,10 +637,12 @@
                         </button>
                         <button
                           class="icon-button icon-button-delete"
-                          (click)="deleteUser(user.uuid)"
+                          (click)="startDeleteConfirm(user)"
                           [disabled]="isSaving() || isLastAdmin(user)"
                           [attr.aria-label]="
-                            translation.translate('admin.users.buttons.delete')
+                            translation.translate(
+                              'admin.users.buttons.deleteUser'
+                            )
                           "
                           [attr.title]="
                             isLastAdmin(user)
@@ -604,7 +650,7 @@
                                   'admin.users.messages.lastAdminDeleteProtection'
                                 )
                               : translation.translate(
-                                  'admin.users.buttons.delete'
+                                  'admin.users.buttons.deleteUser'
                                 )
                           "
                         >

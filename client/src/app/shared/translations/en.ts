@@ -12,6 +12,7 @@ export const en: Translation = {
     signup: 'Sign up',
     yes: 'Yes',
     no: 'No',
+    confirm: 'Confirm',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     pagination: {
@@ -148,6 +149,7 @@ export const en: Translation = {
       buttons: {
         edit: 'Edit',
         delete: 'Delete',
+        deleteUser: 'Delete user',
         deleteConfirm: 'Confirm Delete',
         save: 'Save Changes',
         cancel: 'Cancel',
