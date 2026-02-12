@@ -593,7 +593,7 @@
   border: 1px solid #e5e7eb;
   background: #ffffff;
   box-shadow: none;
-  min-height: calc(var(--users-header-height) + (var(--users-row-height) * 6));
+  /* min-height: calc(var(--users-header-height) + (var(--users-row-height) * 6)); */
   flex: 1;
 }
 
