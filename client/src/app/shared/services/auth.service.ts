@@ -102,37 +102,30 @@ export class AuthService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this.http
-      .post<unknown>(
-        `${environment.apiUrl}/api/auth/login`,
-        {
-          identifier: loginRequest.email,
-          password: loginRequest.password,
-        },
-        { withCredentials: true }
-      )
-      .pipe(
-        switchMap((response) => {
-          return from(this.syncSession()).pipe(
-            switchMap((user) => {
-              if (!user) {
-                return throwError(() => new Error('Missing session user'));
-              }
-
-              return from([{ success: true, user }]);
-            })
-          );
-        }),
-        tap((response) => {
-          this.setLoggedIn(true);
-          this.setUser(response.user);
-        }),
-        catchError((error) => {
-          this._error.set('auth.errors.invalidCredentials');
-          return throwError(() => error);
-        }),
-        finalize(() => this._isLoading.set(false))
-      );
+    return from(this.authClient.signIn.email(loginRequest)).pipe(
+      switchMap((response) => {
+        if (response.error) {
+          return throwError(() => new Error(response.error.message));
+        }
+        return from(this.syncSession()).pipe(
+          switchMap((user) => {
+            if (!user) {
+              return throwError(() => new Error('Missing session user'));
+            }
+            return from([{ success: true, user }]);
+          })
+        );
+      }),
+      tap((response) => {
+        this.setLoggedIn(true);
+        this.setUser(response.user);
+      }),
+      catchError((error) => {
+        this._error.set('auth.errors.invalidCredentials');
+        return throwError(() => error);
+      }),
+      finalize(() => this._isLoading.set(false))
+    );
   }
 
   signup(signupRequest: SignupRequest): Observable<LoginResponse> {
