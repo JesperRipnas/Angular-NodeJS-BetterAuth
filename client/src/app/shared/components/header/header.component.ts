@@ -19,8 +19,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 })
 export class HeaderComponent {
   isLoggedIn = input();
+  isMenuOpen = input(false);
   loginClick = output<void>();
   profileClick = output<void>();
+  menuClick = output<void>();
   themeService = inject(ThemeService);
   translationService = inject(TranslationService);
 
@@ -35,5 +37,9 @@ export class HeaderComponent {
     }
 
     this.loginClick.emit();
+  }
+
+  handleMenuClick(): void {
+    this.menuClick.emit();
   }
 }

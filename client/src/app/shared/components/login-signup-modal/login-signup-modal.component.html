@@ -14,8 +14,10 @@
                 type="text"
                 id="firstName"
                 [placeholder]="'auth.signup.firstNamePlaceholder' | translate"
-                [(ngModel)]="firstName"
+                [ngModel]="firstName()"
+                (ngModelChange)="firstName.set($event)"
                 name="firstName"
+                (input)="onFirstNameInput($any($event.target).value)"
               />
             </div>
 
@@ -24,26 +26,53 @@
                 type="text"
                 id="lastName"
                 [placeholder]="'auth.signup.lastNamePlaceholder' | translate"
-                [(ngModel)]="lastName"
+                [ngModel]="lastName()"
+                (ngModelChange)="lastName.set($event)"
                 name="lastName"
+                (input)="onLastNameInput($any($event.target).value)"
               />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <input
-                type="text"
-                id="username"
-                [placeholder]="'auth.signup.usernamePlaceholder' | translate"
-                [(ngModel)]="username"
-                name="username"
-              />
+              <div class="input-with-icon">
+                <input
+                  type="text"
+                  id="username"
+                  [placeholder]="'auth.signup.usernamePlaceholder' | translate"
+                  [ngModel]="username()"
+                  (ngModelChange)="username.set($event)"
+                  name="username"
+                  (input)="onUsernameInput($any($event.target).value)"
+                  (blur)="validateUsername()"
+                />
+                @if (usernameStatus() !== 'idle') {
+                  <span
+                    class="status-icon"
+                    [class.is-valid]="usernameStatus() === 'valid'"
+                    [class.is-invalid]="usernameStatus() === 'invalid'"
+                    [attr.title]="
+                      usernameStatus() === 'invalid'
+                        ? ('auth.errors.usernameTaken' | translate)
+                        : null
+                    "
+                    aria-hidden="true"
+                  >
+                    {{ usernameStatus() === 'valid' ? '✓' : '✕' }}
+                  </span>
+                }
+              </div>
             </div>
 
             <div class="form-group">
-              <select id="gender" [(ngModel)]="gender" name="gender">
-                <option value="" disabled selected hidden>
+              <select
+                id="gender"
+                [ngModel]="gender()"
+                (ngModelChange)="gender.set($event)"
+                name="gender"
+              >
+                <option value="" disabled hidden>
                   {{ 'auth.signup.genderPlaceholder' | translate }}
                 </option>
                 <option value="male">
@@ -64,21 +93,41 @@
         }
 
         <div class="form-group">
-          <input
-            type="text"
-            id="email"
-            [placeholder]="
-              isLoginMode()
-                ? ('auth.login.usernameOrEmailPlaceholder' | translate)
-                : ('auth.signup.emailPlaceholder' | translate)
-            "
-            [(ngModel)]="email"
-            name="email"
-            (blur)="validateEmail()"
-            (input)="validateEmail()"
-            [class.error]="emailError()"
-          />
-          @if (emailError()) {
+          <div class="input-with-icon">
+            <input
+              type="text"
+              id="email"
+              [placeholder]="
+                isLoginMode()
+                  ? ('auth.login.usernameOrEmailPlaceholder' | translate)
+                  : ('auth.signup.emailPlaceholder' | translate)
+              "
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              name="email"
+              (blur)="validateEmail()"
+              (input)="validateEmail()"
+              [class.error]="emailError()"
+            />
+            @if (isSignupMode() && emailStatus() !== 'idle') {
+              <span
+                class="status-icon"
+                [class.is-valid]="emailStatus() === 'valid'"
+                [class.is-invalid]="emailStatus() === 'invalid'"
+                [attr.title]="
+                  emailStatus() === 'invalid'
+                    ? emailError()
+                      ? (emailError() | translate)
+                      : ('auth.errors.emailTaken' | translate)
+                    : null
+                "
+                aria-hidden="true"
+              >
+                {{ emailStatus() === 'valid' ? '✓' : '✕' }}
+              </span>
+            }
+          </div>
+          @if (emailError() === 'auth.errors.invalidEmail') {
             <span class="error-message">{{ emailError() | translate }}</span>
           }
         </div>
@@ -92,10 +141,16 @@
                 ? ('auth.login.passwordPlaceholder' | translate)
                 : ('auth.signup.passwordPlaceholder' | translate)
             "
-            [(ngModel)]="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
             name="password"
             (input)="onPasswordInput()"
           />
+          @if (isSignupMode() && passwordError()) {
+            <span class="error-message">
+              {{ passwordError() | translate }}
+            </span>
+          }
         </div>
 
         @if (isSignupMode()) {
@@ -106,7 +161,8 @@
               [placeholder]="
                 'auth.signup.confirmPasswordPlaceholder' | translate
               "
-              [(ngModel)]="confirmPassword"
+              [ngModel]="confirmPassword()"
+              (ngModelChange)="confirmPassword.set($event)"
               name="confirmPassword"
               [class.error]="!passwordsMatch()"
             />

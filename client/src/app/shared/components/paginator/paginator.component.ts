@@ -18,11 +18,15 @@ export class PaginatorComponent {
   pageSize = input(10);
   pageIndex = input(1);
   maxPages = input(5);
+  pageSizeOptions = input<number[]>([10, 15, 20]);
   ariaLabel = input('Pagination');
   previousLabel = input('Previous');
   nextLabel = input('Next');
+  pageSizeLabel = input('Rows per page');
+  pageSizeAriaLabel = input('Select page size');
 
   pageChange = output<number>();
+  pageSizeChange = output<number>();
 
   totalPages = computed(() => {
     const total = Math.ceil(this.totalItems() / this.pageSize());
@@ -67,6 +71,13 @@ export class PaginatorComponent {
   goNext(): void {
     if (this.canGoNext()) {
       this.goToPage(this.pageIndex() + 1);
+    }
+  }
+
+  onPageSizeChange(value: string): void {
+    const nextSize = Number.parseInt(value, 10);
+    if (!Number.isNaN(nextSize) && nextSize > 0) {
+      this.pageSizeChange.emit(nextSize);
     }
   }
 }

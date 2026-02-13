@@ -1,8 +1,31 @@
 <section class="profile">
-  <h1 class="title">{{ 'profile.title' | translate }}</h1>
-  <p class="subtitle">{{ 'profile.subtitle' | translate }}</p>
-
   <div class="card">
+    <div class="profile-header" role="region" aria-label="Profile header">
+      <div class="avatar" aria-hidden="false">
+        <svg
+          viewBox="0 0 128 128"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <rect width="128" height="128" rx="16" fill="#eef2ff" />
+          <g transform="translate(16,16)">
+            <circle cx="48" cy="36" r="20" fill="#c7d2fe" />
+            <rect x="0" y="70" width="96" height="18" rx="6" fill="#e0e7ff" />
+          </g>
+        </svg>
+      </div>
+
+      <div class="profile-meta">
+        <div class="title">{{ firstName() }} {{ lastName() }}</div>
+        <div class="subtitle">{{ username() }}</div>
+      </div>
+
+      <div class="profile-actions" aria-hidden="true">
+        <button class="btn btn-primary">Contact</button>
+        <button class="btn btn-outline">Resume</button>
+      </div>
+    </div>
     <div class="field">
       <span class="label">{{ 'profile.firstName' | translate }}</span>
       <span class="value">{{ firstName() }}</span>

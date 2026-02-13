@@ -1,4 +1,16 @@
-<aside class="sidebar" [class.visible]="isVisible()">
+@if (mobileOpen()) {
+  <div
+    class="sidebar-backdrop"
+    (click)="closeMobileMenu()"
+    aria-hidden="true"
+  ></div>
+}
+
+<aside
+  class="sidebar"
+  [class.visible]="isVisible() || mobileOpen()"
+  [class.mobile-open]="mobileOpen()"
+>
   <div class="logo-section">
     <div class="logo-icon">
       <svg

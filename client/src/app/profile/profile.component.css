@@ -1,34 +1,111 @@
 .profile {
-  max-width: 720px;
-  margin: 1rem auto;
-  padding: 1rem;
-  color: inherit;
+  padding: 1.5rem;
+  /* Center container and constrain width for better layout */
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  color: #111827;
+  background: transparent;
+}
+
+/* Scale down entire profile component to match users layout */
+:host .profile {
+  zoom: 0.9;
+  -webkit-transform: scale(0.9);
+  -webkit-transform-origin: 50% 0;
+  -moz-transform: scale(0.9);
+  -moz-transform-origin: 50% 0;
+  transform: scale(0.9);
+  transform-origin: 50% 0;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.35rem;
 }
 
 .subtitle {
-  margin: 0 0 1.5rem;
-  color: #4b5563;
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
 }
 
 .card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  box-shadow: 0 10px 25px -12px rgba(0, 0, 0, 0.15);
+  border-radius: 1.25rem;
+  /* Keep content padding and add extra space at the bottom for consistency */
+  padding: 1.25rem 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: space-between;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.avatar svg {
+  width: 64px;
+  height: 64px;
+  display: block;
+}
+
+.profile-meta {
+  flex: 1 1 auto;
+  padding: 0 1rem;
+  min-width: 0;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.btn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #10b981;
+  color: white;
+  border-color: rgba(16, 185, 129, 0.15);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #2563eb;
+  border-color: #c7d2fe;
 }
 
 .field {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid #f3f4f6;
 }
 
@@ -39,17 +116,19 @@
 .label {
   font-weight: 600;
   color: #6b7280;
+  font-size: 0.875rem;
 }
 
 .value {
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
+  font-size: 0.95rem;
 }
 
 :host-context(.dark) .card {
   background: #1f2937;
-  border-color: #374151;
-  box-shadow: none;
+  border-color: #1f2937;
+  box-shadow: 0 20px 35px rgba(2, 6, 23, 0.45);
 }
 
 :host-context(.dark) .subtitle {
@@ -62,4 +141,20 @@
 
 :host-context(.dark) .value {
   color: #f9fafb;
+}
+
+/* Reuse users component inline input styles for consistent editing UI */
+.inline-input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.35rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.inline-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) inset;
 }

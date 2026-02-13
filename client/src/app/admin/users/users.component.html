@@ -1,16 +1,200 @@
 <section class="users-container">
-  <div class="users-header">
-    <div>
-      <h1 class="title">{{ translation.translate('admin.users.title') }}</h1>
-    </div>
-  </div>
+  <section
+    class="analytics-panel"
+    [attr.aria-label]="translation.translate('admin.users.analytics.title')"
+  >
+    <div class="users-analytics">
+      <div class="analytics-header">
+        <div>
+          <h2 class="analytics-title">
+            {{ translation.translate('admin.users.analytics.title') }}
+          </h2>
+          <p class="analytics-subtitle">
+            {{ translation.translate('admin.users.analytics.subtitle') }}
+          </p>
+        </div>
+        <div class="analytics-total" aria-live="polite">
+          <span class="analytics-total-label">
+            {{ translation.translate('admin.users.analytics.totalUsers') }}
+          </span>
+          <span class="analytics-total-value">{{ totalUsers() }}</span>
+        </div>
+      </div>
 
+      <div class="analytics-grid">
+        <section class="analytics-card" aria-labelledby="tiers-chart-title">
+          <h3 id="tiers-chart-title" class="analytics-card-title">
+            {{ translation.translate('admin.users.analytics.paymentTiers') }}
+          </h3>
+          <div class="bar-chart" role="list">
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierFree') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierFree') +
+                  ': 120'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="60"></span>
+              </div>
+              <span class="bar-value">120</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierStarter') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierStarter') +
+                  ': 45'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="30"></span>
+              </div>
+              <span class="bar-value">45</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{ translation.translate('admin.users.analytics.tierPro') }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate('admin.users.analytics.tierPro') +
+                  ': 18'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="18"></span>
+              </div>
+              <span class="bar-value">18</span>
+            </div>
+            <div class="bar-row" role="listitem">
+              <span class="bar-label">
+                {{
+                  translation.translate('admin.users.analytics.tierEnterprise')
+                }}
+              </span>
+              <div
+                class="bar-track"
+                role="img"
+                [attr.aria-label]="
+                  translation.translate(
+                    'admin.users.analytics.tierEnterprise'
+                  ) + ': 3'
+                "
+              >
+                <span class="bar-fill" [style.width.%]="8"></span>
+              </div>
+              <span class="bar-value">3</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="signup-chart-title">
+          <h3 id="signup-chart-title" class="analytics-card-title">
+            {{
+              translation.translate('admin.users.analytics.signupsLastMonths')
+            }}
+          </h3>
+          <div class="spark-chart" role="list">
+            @for (item of monthlySignups(); track item.key) {
+              <div class="spark-item" role="listitem">
+                <span class="spark-count">{{ item.count }}</span>
+                <div
+                  class="spark-bar"
+                  role="img"
+                  [attr.aria-label]="item.label + ': ' + item.count"
+                  [style.height.%]="item.percent"
+                ></div>
+                <span class="spark-label">{{ item.label }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="premium-chart-title">
+          <h3 id="premium-chart-title" class="analytics-card-title">
+            {{
+              translation.translate(
+                'admin.users.analytics.premiumUsersPlaceholder'
+              )
+            }}
+          </h3>
+          <div
+            class="line-chart"
+            role="img"
+            [attr.aria-label]="
+              translation.translate(
+                'admin.users.analytics.premiumUsersPlaceholder'
+              ) + ': 6 month trend'
+            "
+          >
+            <svg viewBox="0 0 240 120" aria-hidden="true" focusable="false">
+              <polyline
+                class="line-stroke"
+                points="0,90 40,82 80,70 120,58 160,50 200,40 240,32"
+              ></polyline>
+              <circle class="line-point" cx="0" cy="90" r="3"></circle>
+              <circle class="line-point" cx="40" cy="82" r="3"></circle>
+              <circle class="line-point" cx="80" cy="70" r="3"></circle>
+              <circle class="line-point" cx="120" cy="58" r="3"></circle>
+              <circle class="line-point" cx="160" cy="50" r="3"></circle>
+              <circle class="line-point" cx="200" cy="40" r="3"></circle>
+              <circle class="line-point" cx="240" cy="32" r="3"></circle>
+            </svg>
+            <div class="line-labels" aria-hidden="true">
+              <span>Sep</span>
+              <span>Oct</span>
+              <span>Nov</span>
+              <span>Dec</span>
+              <span>Jan</span>
+              <span>Feb</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="analytics-card" aria-labelledby="earnings-chart-title">
+          <h3 id="earnings-chart-title" class="analytics-card-title">
+            {{
+              translation.translate('admin.users.analytics.earningsPlaceholder')
+            }}
+          </h3>
+          <div class="earnings-stats" aria-live="polite">
+            <div class="earnings-item">
+              <span class="earnings-label">
+                {{
+                  translation.translate(
+                    'admin.users.analytics.earningsLast30Days'
+                  )
+                }}
+              </span>
+              <span class="earnings-value">$12,450</span>
+            </div>
+            <div class="earnings-item">
+              <span class="earnings-label">
+                {{
+                  translation.translate(
+                    'admin.users.analytics.earningsLast6Months'
+                  )
+                }}
+              </span>
+              <span class="earnings-value">$74,980</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
   <div class="users-panel">
     <div class="filters-card" aria-label="User filters">
       <div class="search-row" role="search">
-        <label class="search-label" for="user-search">
-          {{ translation.translate('admin.users.search.label') }}
-        </label>
         <div class="search-controls">
           <div class="search-input-wrapper">
             <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -30,26 +214,66 @@
               [attr.aria-describedby]="'user-search-help'"
             />
           </div>
-          <button
-            class="btn btn-filter-toggle"
-            type="button"
-            (click)="toggleFilters()"
-          >
-            <span class="filter-toggle-text">
-              {{
-                showFilters()
-                  ? translation.translate('admin.users.filters.hide')
-                  : translation.translate('admin.users.filters.show')
-              }}
-            </span>
-            <span
-              class="filter-toggle-icon"
-              [class.is-open]="showFilters()"
-              aria-hidden="true"
+          <div class="filter-buttons">
+            <button
+              class="btn btn-filter-toggle"
+              type="button"
+              (click)="toggleFilters()"
             >
-              ▾
-            </span>
-          </button>
+              <span class="filter-toggle-text">
+                {{
+                  showFilters()
+                    ? translation.translate('admin.users.filters.hide')
+                    : translation.translate('admin.users.filters.show')
+                }}
+              </span>
+              <span
+                class="filter-toggle-icon"
+                [class.is-open]="showFilters()"
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </button>
+            <button
+              class="btn btn-filter-toggle"
+              type="button"
+              (click)="clearFilters()"
+              aria-label="{{
+                translation.translate('admin.users.filters.clear')
+              }}"
+            >
+              {{ translation.translate('admin.users.filters.clear') }}
+            </button>
+            <button
+              class="btn btn-filter-toggle"
+              type="button"
+              (click)="exportUsers()"
+              aria-label="{{
+                translation.translate('admin.users.filters.export')
+              }}"
+            >
+              {{ translation.translate('admin.users.filters.export') }}
+              <svg
+                class="export-icon"
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="#1976d2"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+                style="vertical-align: middle; margin-left: 0.5rem"
+              >
+                <path d="M12 17v-10" />
+                <polyline points="7 12 12 17 17 12" />
+                <rect x="3" y="19" width="18" height="2" rx="1" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -108,83 +332,426 @@
       }
     </div>
 
-    @if (error()) {
-      <div class="error-message">
-        {{ error() }}
-      </div>
-    }
-
     @if (isLoading()) {
       <div class="loading">{{ translation.translate('shared.loading') }}</div>
     } @else {
       <div class="users-table">
         <table>
+          <colgroup>
+            <col class="col-created" />
+            <col class="col-updated" />
+            <col class="col-uuid" />
+            <!-- <col class="col-verified" /> -->
+            <col class="col-role" />
+            <col class="col-username" />
+            <col class="col-first-name" />
+            <col class="col-last-name" />
+            <col class="col-email" />
+            <col class="col-actions" />
+          </colgroup>
           <thead>
             <tr>
-              <th>
-                {{ translation.translate('admin.users.table.username') }}
+              <th [attr.aria-sort]="getAriaSort('createdAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('createdAt')"
+                >
+                  {{ translation.translate('admin.users.table.createdAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('createdAt')
+                  }}</span>
+                </button>
               </th>
-              <th>{{ translation.translate('admin.users.table.email') }}</th>
-              <th>
-                {{ translation.translate('admin.users.modal.firstName') }}
+              <th [attr.aria-sort]="getAriaSort('updatedAt')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('updatedAt')"
+                >
+                  {{ translation.translate('admin.users.table.updatedAt') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('updatedAt')
+                  }}</span>
+                </button>
               </th>
-              <th>{{ translation.translate('admin.users.modal.lastName') }}</th>
               <th>
-                {{ translation.translate('admin.users.table.verifiedEmail') }}
+                <span>{{
+                  translation.translate('admin.users.table.uuid')
+                }}</span>
               </th>
-              <th>{{ translation.translate('admin.users.table.role') }}</th>
-              <th>
-                {{ translation.translate('admin.users.table.actions') }}
+              <!-- <th
+                class="col-center"
+                [attr.aria-sort]="getAriaSort('verifiedEmail')"
+              >
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('verifiedEmail')"
+                >
+                  {{ translation.translate('admin.users.table.verifiedEmail') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('verifiedEmail')
+                  }}</span>
+                </button>
+              </th> -->
+              <th class="col-center" [attr.aria-sort]="getAriaSort('role')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('role')"
+                >
+                  {{ translation.translate('admin.users.table.role') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('role')
+                  }}</span>
+                </button>
               </th>
+              <th [attr.aria-sort]="getAriaSort('username')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('username')"
+                >
+                  {{ translation.translate('admin.users.table.username') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('username')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('firstName')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('firstName')"
+                >
+                  {{ translation.translate('admin.users.modal.firstName') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('firstName')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('lastName')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('lastName')"
+                >
+                  {{ translation.translate('admin.users.modal.lastName') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('lastName')
+                  }}</span>
+                </button>
+              </th>
+              <th [attr.aria-sort]="getAriaSort('email')">
+                <button
+                  type="button"
+                  class="sort-button"
+                  (click)="toggleSort('email')"
+                >
+                  {{ translation.translate('admin.users.table.email') }}
+                  <span class="sort-indicator">{{
+                    getSortIndicator('email')
+                  }}</span>
+                </button>
+              </th>
+              <th class="col-center"></th>
             </tr>
           </thead>
           <tbody>
             @if (pagedUsers().length > 0) {
               @for (user of pagedUsers(); track user.uuid) {
-                <tr>
-                  <td>{{ user.username }}</td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.firstName }}</td>
-                  <td>{{ user.lastName }}</td>
-                  <td>
+                <tr
+                  [class.editing-row]="editingRow() === user.uuid"
+                  [class.deleting-row]="deletingRow() === user.uuid"
+                >
+                  <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+                  <td class="date-cell">
                     {{
-                      user.verifiedEmail
-                        ? translation.translate('shared.yes')
+                      user.updatedAt
+                        ? formatDate(user.updatedAt)
                         : translation.translate('shared.no')
                     }}
                   </td>
-                  <td>
-                    <span class="role-badge" [class]="'role-' + user.role">
-                      {{ user.role }}
-                    </span>
+                  <td class="uuid-cell" title="{{ user.uuid }}">
+                    <span class="uuid-text">{{ user.uuid }}</span>
                   </td>
-                  <td>
-                    <div class="actions-cell">
-                      <button
-                        class="btn btn-edit"
-                        (click)="openEditModal(user)"
-                        [disabled]="isSaving()"
-                      >
-                        {{ translation.translate('admin.users.buttons.edit') }}
-                      </button>
-                      <button
-                        class="btn btn-delete"
-                        (click)="deleteUser(user.uuid)"
-                        [disabled]="isSaving() || isLastAdmin(user)"
-                        [title]="
-                          isLastAdmin(user)
-                            ? translation.translate(
-                                'admin.users.messages.lastAdminDeleteProtection'
-                              )
-                            : translation.translate(
-                                'admin.users.buttons.delete'
-                              )
+                  <!-- <td>
+                    @if (user.verifiedEmail) {
+                      <span
+                        class="verified-icon verified-yes"
+                        [attr.aria-label]="
+                          translation.translate('admin.users.search.verified')
+                        "
+                        [attr.title]="
+                          translation.translate('admin.users.search.verified')
                         "
                       >
-                        {{
-                          translation.translate('admin.users.buttons.delete')
-                        }}
-                      </button>
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                          />
+                        </svg>
+                      </span>
+                    } @else {
+                      <span
+                        class="verified-icon verified-no"
+                        [attr.aria-label]="
+                          translation.translate('admin.users.search.unverified')
+                        "
+                        [attr.title]="
+                          translation.translate('admin.users.search.unverified')
+                        "
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path
+                            d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.7 2.88 18.29 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.88 4.3z"
+                          />
+                        </svg>
+                      </span>
+                    }
+                  </td> -->
+                  <td>
+                    @if (editingRow() === user.uuid) {
+                      <select
+                        (change)="
+                          setEditedValue('role', $any($event.target).value)
+                        "
+                        (keydown)="handleInlineKey($event, user)"
+                        (keydown.escape)="handleInlineKey($event, user)"
+                        (keyup.enter)="handleInlineKey($event, user)"
+                      >
+                        @for (opt of roleOptions; track opt.value) {
+                          <option
+                            [value]="opt.value"
+                            [selected]="opt.value === editedRow().role"
+                          >
+                            {{ translation.translate(opt.labelKey) }}
+                          </option>
+                        }
+                      </select>
+                    } @else {
+                      <span class="role-badge" [class]="'role-' + user.role">
+                        {{ user.role }}
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    @if (editingRow() === user.uuid) {
+                      <input
+                        type="text"
+                        class="inline-input"
+                        [value]="editedRow().username"
+                        [class.invalid]="!isEditedFieldValid('username', user)"
+                        (input)="
+                          setEditedValue('username', $any($event.target).value)
+                        "
+                        (keydown)="handleInlineKey($event, user)"
+                        (keydown.escape)="handleInlineKey($event, user)"
+                        (keyup.enter)="handleInlineKey($event, user)"
+                      />
+                    } @else {
+                      {{ formatUsername(user.username) }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingRow() === user.uuid) {
+                      <input
+                        type="text"
+                        class="inline-input"
+                        [value]="editedRow().firstName"
+                        [class.invalid]="!isEditedFieldValid('firstName', user)"
+                        (input)="
+                          setEditedValue('firstName', $any($event.target).value)
+                        "
+                        (keydown)="handleInlineKey($event, user)"
+                        (keydown.escape)="handleInlineKey($event, user)"
+                        (keyup.enter)="handleInlineKey($event, user)"
+                      />
+                    } @else {
+                      {{ user.firstName }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingRow() === user.uuid) {
+                      <input
+                        type="text"
+                        class="inline-input"
+                        [value]="editedRow().lastName"
+                        [class.invalid]="!isEditedFieldValid('lastName', user)"
+                        (input)="
+                          setEditedValue('lastName', $any($event.target).value)
+                        "
+                        (keydown)="handleInlineKey($event, user)"
+                        (keydown.escape)="handleInlineKey($event, user)"
+                        (keyup.enter)="handleInlineKey($event, user)"
+                      />
+                    } @else {
+                      {{ user.lastName }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingRow() === user.uuid) {
+                      <input
+                        type="email"
+                        class="inline-input"
+                        [value]="editedRow().email"
+                        [class.invalid]="!isEditedFieldValid('email', user)"
+                        (input)="
+                          setEditedValue('email', $any($event.target).value)
+                        "
+                        (keydown)="handleInlineKey($event, user)"
+                        (keydown.escape)="handleInlineKey($event, user)"
+                        (keyup.enter)="handleInlineKey($event, user)"
+                      />
+                    } @else {
+                      {{ user.email }}
+                    }
+                  </td>
+                  <td class="col-center">
+                    <div class="actions-cell">
+                      @if (editingRow() === user.uuid) {
+                        <button
+                          class="icon-button icon-button-save"
+                          type="button"
+                          (click)="saveInlineEdit(user)"
+                          [disabled]="!canSaveInline(user)"
+                          [attr.aria-label]="
+                            translation.translate('shared.save')
+                          "
+                          [attr.title]="translation.translate('shared.save')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button-cancel"
+                          type="button"
+                          (click)="cancelInlineEdit()"
+                          [disabled]="isSaving()"
+                          [attr.aria-label]="
+                            translation.translate('shared.cancel')
+                          "
+                          [attr.title]="translation.translate('shared.cancel')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.7 2.88 18.29 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.88 4.3z"
+                            />
+                          </svg>
+                        </button>
+                      } @else if (deletingRow() === user.uuid) {
+                        <button
+                          class="icon-button icon-button-save"
+                          type="button"
+                          (click)="confirmDelete(user.uuid)"
+                          [disabled]="isSaving()"
+                          [attr.aria-label]="
+                            translation.translate('shared.confirm')
+                          "
+                          [attr.title]="translation.translate('shared.confirm')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button-cancel"
+                          type="button"
+                          (click)="cancelDeleteConfirm()"
+                          [disabled]="isSaving()"
+                          [attr.aria-label]="
+                            translation.translate('shared.cancel')
+                          "
+                          [attr.title]="translation.translate('shared.cancel')"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.7 2.88 18.29 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.88 4.3z"
+                            />
+                          </svg>
+                        </button>
+                      } @else {
+                        <button
+                          class="icon-button icon-button-edit"
+                          (click)="startInlineEdit(user)"
+                          [disabled]="isSaving() || deletingRow()"
+                          [attr.aria-label]="
+                            translation.translate('admin.users.buttons.edit')
+                          "
+                          [attr.title]="
+                            translation.translate('admin.users.buttons.edit')
+                          "
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.83H5v-.92l8.06-8.06.92.92L5.92 20.08zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button-delete"
+                          (click)="startDeleteConfirm(user)"
+                          [disabled]="isSaving() || isLastAdmin(user)"
+                          [attr.aria-label]="
+                            translation.translate(
+                              'admin.users.buttons.deleteUser'
+                            )
+                          "
+                          [attr.title]="
+                            isLastAdmin(user)
+                              ? translation.translate(
+                                  'admin.users.messages.lastAdminDeleteProtection'
+                                )
+                              : translation.translate(
+                                  'admin.users.buttons.deleteUser'
+                                )
+                          "
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M6 7h12l-1 14H7L6 7zm3-3h6l1 1h4v2H4V5h4l1-1z"
+                            />
+                          </svg>
+                        </button>
+                      }
                     </div>
                   </td>
                 </tr>
@@ -198,24 +765,21 @@
             }
           </tbody>
         </table>
-        <app-paginator
-          [totalItems]="filteredUsers().length"
-          [pageSize]="pageSize()"
-          [pageIndex]="pageIndex()"
-          [previousLabel]="translation.translate('shared.pagination.previous')"
-          [nextLabel]="translation.translate('shared.pagination.next')"
-          (pageChange)="onPageChange($event)"
-        ></app-paginator>
       </div>
+      <app-paginator
+        [totalItems]="filteredUsers().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="pageSizeOptions"
+        [pageSizeLabel]="translation.translate('shared.pagination.pageSize')"
+        [pageSizeAriaLabel]="
+          translation.translate('shared.pagination.pageSizeAria')
+        "
+        [previousLabel]="translation.translate('shared.pagination.previous')"
+        [nextLabel]="translation.translate('shared.pagination.next')"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-paginator>
     }
   </div>
 </section>
-
-@if (selectedUserForEdit()) {
-  <app-edit-user-modal
-    [user]="selectedUserForEdit()"
-    [adminCount]="adminCount()"
-    (closeModal)="closeEditModal()"
-    (saveUser)="saveEditedUser($event)"
-  ></app-edit-user-modal>
-}

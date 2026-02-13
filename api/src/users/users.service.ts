@@ -1,70 +1,163 @@
-import { Injectable } from '@nestjs/common';
-import { AuthUser } from '../auth/interfaces/auth-user.interface';
-import { Role } from '../auth/enums/role.enum';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { QueryResult } from 'pg';
+import { AuthUser } from '../auth/interfaces/auth-user.interface.js';
+// Role enum intentionally unused in this service
+import { authDatabase } from '../auth/auth.js';
 
 @Injectable()
 export class UsersService {
-  // Mock data for now - will be replaced with database queries later
-  private users: AuthUser[] = [
-    {
-      uuid: '0f2b4a2e-3b9a-4e0a-a98d-8f4f5d2f9a01',
-      username: 'admin',
-      email: 'admin@example.com',
-      firstName: 'Admin',
-      lastName: 'User',
-      birthDate: '1990-01-01',
-      role: Role.ADMIN,
-      verifiedEmail: true,
-    },
-    {
-      uuid: '7c5f5c3b-5f8a-46c7-9b1a-3fdc1c2f1d04',
-      username: 'john_doe',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      birthDate: '1992-05-15',
-      role: Role.USER,
-      verifiedEmail: false,
-    },
-    {
-      uuid: '2f7a9b1a-6d2d-4e1f-9d3a-2b6d1f9e4a05',
-      username: 'seller_jane',
-      email: 'jane@example.com',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      birthDate: '1988-11-22',
-      role: Role.SELLER,
-      verifiedEmail: false,
-    },
-  ];
+  private readonly defaultCreatedAt = '2024-01-01T00:00:00Z';
+
+  private readonly pool = authDatabase;
+
+  private readonly selectFields = `
+    "id" AS "uuid",
+    "username",
+    "email",
+    "firstName",
+    "lastName",
+    "birthDate",
+    "createdAt",
+    "updatedAt",
+    "emailVerified" AS "verifiedEmail",
+    "role"
+  `;
 
   // NEEDS TO CHECK FOR AUTHORIZATION BOTH IN CLIENT & SERVER
-  getUsers(): AuthUser[] {
-    return this.users;
+  async getUsers(): Promise<AuthUser[]> {
+    const result: QueryResult<AuthUser> = await this.pool.query(
+      `SELECT ${this.selectFields} FROM "user" ORDER BY "createdAt" DESC`,
+    );
+    return result.rows.map((user) => this.normalizeUserDates(user));
   }
 
-  getUserById(uuid: string): AuthUser | undefined {
-    return this.users.find((user) => user.uuid === uuid);
+  async getUserById(uuid: string): Promise<AuthUser | undefined> {
+    const result: QueryResult<AuthUser> = await this.pool.query(
+      `SELECT ${this.selectFields} FROM "user" WHERE "id" = $1 LIMIT 1`,
+      [uuid],
+    );
+    const user = result.rows[0];
+    return user ? this.normalizeUserDates(user) : undefined;
   }
 
-  updateUser(
+  async isUsernameAvailable(
+    username: string,
+    excludeId?: string,
+  ): Promise<boolean> {
+    const normalized = this.normalizeUsername(username);
+    if (!normalized) {
+      return false;
+    }
+
+    const params: string[] = [normalized];
+    let query = `SELECT "id" FROM "user" WHERE LOWER("username") = $1`;
+    if (excludeId) {
+      params.push(excludeId);
+      query += ` AND "id" <> $2`;
+    }
+    query += ' LIMIT 1';
+
+    const result = await this.pool.query(query, params);
+    return (result.rowCount ?? 0) === 0;
+  }
+
+  async isEmailAvailable(email: string, excludeId?: string): Promise<boolean> {
+    const normalized = this.normalizeEmail(email);
+    if (!normalized) {
+      return false;
+    }
+
+    const params: string[] = [normalized];
+    let query = `SELECT "id" FROM "user" WHERE LOWER("email") = $1`;
+    if (excludeId) {
+      params.push(excludeId);
+      query += ` AND "id" <> $2`;
+    }
+    query += ' LIMIT 1';
+
+    const result = await this.pool.query(query, params);
+    return (result.rowCount ?? 0) === 0;
+  }
+
+  async updateUser(
     uuid: string,
     updateData: Partial<AuthUser>,
-  ): AuthUser | undefined {
-    const index = this.users.findIndex((user) => user.uuid === uuid);
-    if (index !== -1) {
-      this.users[index] = { ...this.users[index], ...updateData };
-      return this.users[index];
+  ): Promise<AuthUser | undefined> {
+    const normalizedUsername = updateData.username?.trim();
+    if (normalizedUsername) {
+      const available = await this.isUsernameAvailable(
+        normalizedUsername,
+        uuid,
+      );
+      if (!available) {
+        throw new BadRequestException('Username already exists');
+      }
     }
-    return undefined;
+
+    const fields: string[] = [];
+    const values: Array<string | boolean | null> = [];
+    const setField = (column: string, value: string | boolean | null) => {
+      fields.push(`"${column}" = $${values.length + 1}`);
+      values.push(value);
+    };
+
+    if (updateData.username !== undefined) {
+      setField('username', updateData.username?.trim() || null);
+    }
+    if (updateData.email !== undefined) {
+      setField('email', updateData.email?.trim() || null);
+    }
+    if (updateData.firstName !== undefined) {
+      setField('firstName', updateData.firstName?.trim() || null);
+    }
+    if (updateData.lastName !== undefined) {
+      setField('lastName', updateData.lastName?.trim() || null);
+    }
+    if (updateData.birthDate !== undefined) {
+      setField('birthDate', updateData.birthDate || null);
+    }
+    if (updateData.role !== undefined) {
+      setField('role', updateData.role);
+    }
+    if (updateData.verifiedEmail !== undefined) {
+      setField('emailVerified', updateData.verifiedEmail);
+    }
+
+    if (fields.length === 0) {
+      return this.getUserById(uuid);
+    }
+
+    setField('updatedAt', new Date().toISOString());
+    values.push(uuid);
+
+    const result: QueryResult<AuthUser> = await this.pool.query(
+      `UPDATE "user" SET ${fields.join(', ')} WHERE "id" = $${values.length} RETURNING ${this.selectFields}`,
+      values,
+    );
+
+    const updated = result.rows[0];
+    return updated ? this.normalizeUserDates(updated) : undefined;
   }
 
-  deleteUser(uuid: string): boolean {
-    const index = this.users.findIndex((user) => user.uuid === uuid);
-    if (index !== -1) {
-      this.users.splice(index, 1);
-      return true;
-    }
-    return false;
+  private normalizeUserDates(user: AuthUser): AuthUser {
+    return {
+      ...user,
+      createdAt: user.createdAt || this.defaultCreatedAt,
+    };
+  }
+
+  private normalizeUsername(value: string | null | undefined): string {
+    return value?.trim().toLowerCase() ?? '';
+  }
+
+  private normalizeEmail(value: string | null | undefined): string {
+    return value?.trim().toLowerCase() ?? '';
+  }
+
+  async deleteUser(uuid: string): Promise<boolean> {
+    const result = await this.pool.query(`DELETE FROM "user" WHERE "id" = $1`, [
+      uuid,
+    ]);
+    return (result.rowCount ?? 0) > 0;
   }
 }

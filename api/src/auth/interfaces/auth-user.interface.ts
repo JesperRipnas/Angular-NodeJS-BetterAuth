@@ -1,4 +1,4 @@
-import { Role } from '../enums/role.enum';
+import { Role } from '../enums/role.enum.js';
 
 export interface AuthUser {
   uuid: string;
@@ -7,6 +7,8 @@ export interface AuthUser {
   firstName: string;
   lastName: string;
   birthDate: string;
+  createdAt: string;
+  updatedAt: string;
   verifiedEmail: boolean;
   role: Role;
 }

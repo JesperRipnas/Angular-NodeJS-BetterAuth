@@ -1,34 +1,52 @@
 <nav class="paginator" [attr.aria-label]="ariaLabel()">
-  <button
-    class="page-btn"
-    type="button"
-    [disabled]="!canGoPrevious()"
-    (click)="goPrevious()"
-  >
-    {{ previousLabel() }}
-  </button>
+  <div class="page-group">
+    <button
+      class="page-btn"
+      type="button"
+      [disabled]="!canGoPrevious()"
+      (click)="goPrevious()"
+    >
+      {{ previousLabel() }}
+    </button>
 
-  <div class="page-list" role="list">
-    @for (page of pages(); track page) {
-      <button
-        class="page-btn page-number"
-        type="button"
-        (click)="goToPage(page)"
-        [class.is-active]="page === pageIndex()"
-        [attr.aria-current]="page === pageIndex() ? 'page' : null"
-        role="listitem"
-      >
-        {{ page }}
-      </button>
-    }
+    <div class="page-list" role="list">
+      @for (page of pages(); track page) {
+        <button
+          class="page-btn page-number"
+          type="button"
+          (click)="goToPage(page)"
+          [class.is-active]="page === pageIndex()"
+          [attr.aria-current]="page === pageIndex() ? 'page' : null"
+          role="listitem"
+        >
+          {{ page }}
+        </button>
+      }
+    </div>
+
+    <button
+      class="page-btn"
+      type="button"
+      [disabled]="!canGoNext()"
+      (click)="goNext()"
+    >
+      {{ nextLabel() }}
+    </button>
   </div>
 
-  <button
-    class="page-btn"
-    type="button"
-    [disabled]="!canGoNext()"
-    (click)="goNext()"
-  >
-    {{ nextLabel() }}
-  </button>
+  <div class="page-size">
+    <span class="page-size-label">{{ pageSizeLabel() }}</span>
+    <select
+      class="page-size-select"
+      [value]="pageSize()"
+      (change)="onPageSizeChange($any($event.target).value)"
+      [attr.aria-label]="pageSizeAriaLabel()"
+    >
+      @for (option of pageSizeOptions(); track option) {
+        <option [value]="option" [selected]="option === pageSize()">
+          {{ option }}
+        </option>
+      }
+    </select>
+  </div>
 </nav>

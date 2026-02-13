@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = `${this.resolveApiUrl()}/users`;
+  private readonly API_URL = `${this.resolveApiUrl()}/api/users`;
 
   private resolveApiUrl(): string {
     const base = environment.apiUrl?.trim();
@@ -21,6 +21,24 @@ export class UsersService {
 
   getUsers(): Observable<AuthUser[]> {
     return this.http.get<AuthUser[]>(this.API_URL);
+  }
+
+  checkUsername(username: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.API_URL}/check-username`,
+      {
+        params: { username },
+      }
+    );
+  }
+
+  checkEmail(email: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.API_URL}/check-email`,
+      {
+        params: { email },
+      }
+    );
   }
 
   getUser(id: string): Observable<AuthUser> {

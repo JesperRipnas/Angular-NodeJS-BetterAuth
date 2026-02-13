@@ -1,9 +1,68 @@
 .paginator {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end; /* keep page-size on the right */
   gap: 0.75rem;
-  padding: 1rem 0 0;
+  /* match the users table header height (falls back to 52px) */
+  height: var(--users-header-height, 52px);
+  flex-wrap: wrap;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.page-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 1rem; /* spacing from right edge */
+}
+
+.page-group {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  /* center visually using absolute centering so page-size can remain on the right */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 640px) {
+  /* fallback: stack naturally on small screens to avoid overlap */
+  .paginator {
+    justify-content: center;
+    height: auto;
+    padding: 0.75rem 0.75rem;
+    flex-wrap: wrap;
+  }
+  .page-group {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+  }
+  .page-size {
+    padding-right: 0.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.page-size-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.page-size-select {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.85rem;
 }
 
 .page-list {
@@ -48,6 +107,22 @@
 }
 
 :host-context(.dark) .page-btn {
+  background: #0b1220;
+  border-color: #1f2937;
+  color: #e2e8f0;
+}
+
+/* Match users table header background in dark mode */
+:host-context(.dark) .paginator {
+  background: #1f2937;
+  border-top: 1px solid #334155;
+}
+
+:host-context(.dark) .page-size-label {
+  color: #9ca3af;
+}
+
+:host-context(.dark) .page-size-select {
   background: #0b1220;
   border-color: #1f2937;
   color: #e2e8f0;

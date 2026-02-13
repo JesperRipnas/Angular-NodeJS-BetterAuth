@@ -1,93 +1,133 @@
-<header class="header">
-  <nav class="nav">
-    <div class="button-group">
+<header
+  class="w-full border-b border-[#e0e0e0] bg-white px-[1.5rem] py-[0.75rem] text-black dark:border-[#1f2937] dark:bg-[#111827] dark:text-white"
+>
+  <div class="mx-auto flex w-full items-center justify-end px-[1rem]">
+    @if (isLoggedIn()) {
       <button
-        class="language-toggle"
-        (click)="toggleLanguage()"
-        [title]="translationService.languageToggleLabel()"
+        type="button"
+        class="mobile-menu-button mr-auto flex items-center justify-center"
+        (click)="handleMenuClick()"
+        [attr.aria-label]="
+          isMenuOpen()
+            ? ('shared.closeMenu' | translate)
+            : ('shared.openMenu' | translate)
+        "
+        [attr.title]="
+          isMenuOpen()
+            ? ('shared.closeMenu' | translate)
+            : ('shared.openMenu' | translate)
+        "
       >
-        <svg
-          class="language-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path
-            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            d="M3 6h18M3 12h18M3 18h18"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
           />
         </svg>
-        <span class="language-text">{{
-          translationService.language() === 'en' ? 'EN' : 'SV'
-        }}</span>
       </button>
+    }
 
-      <button
-        class="theme-toggle"
-        (click)="themeService.toggleTheme()"
-        [title]="
-          themeService.isDarkMode()
-            ? ('header.switchToLightMode' | translate)
-            : ('header.switchToDarkMode' | translate)
-        "
-      >
-        @if (themeService.isDarkMode()) {
+    <nav class="flex items-center justify-end">
+      <div class="flex items-center gap-[0.75rem]">
+        <button
+          class="header-lang-button flex w-16 cursor-pointer items-center justify-center gap-[0.5rem] rounded-[0.625rem] border border-[#d0d0d0] bg-white px-[0.75rem] py-[0.6rem] text-[0.75rem] font-semibold text-black transition-all duration-300 hover:border-[#b0b0b0] dark:border-[#1f2937] dark:bg-[#111827] dark:text-white dark:hover:border-[#374151]"
+          (click)="toggleLanguage()"
+          [title]="translationService.languageToggleLabel()"
+        >
           <svg
-            class="theme-icon"
+            class="h-[1rem] w-[1rem] shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
+            stroke-width="2"
           >
-            <circle cx="12" cy="12" r="5" />
-            <line x1="12" y1="1" x2="12" y2="3" />
-            <line x1="12" y1="21" x2="12" y2="23" />
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-            <line x1="1" y1="12" x2="3" y2="12" />
-            <line x1="21" y1="12" x2="23" y2="12" />
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            />
           </svg>
-        } @else {
-          <svg class="theme-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-          </svg>
-        }
-      </button>
+          <span
+            class="header-lang-label select-none text-[0.75rem] font-semibold tracking-[0.05em]"
+            >{{ translationService.language() === 'en' ? 'EN' : 'SV' }}</span
+          >
+        </button>
 
-      <button
-        (click)="handleAuthClick()"
-        class="login-button"
-        [title]="
-          isLoggedIn()
-            ? ('shared.myProfile' | translate)
-            : ('shared.login' | translate)
-        "
-      >
-        @if (isLoggedIn()) {
-          <svg
-            class="login-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-        } @else {
-          <svg
-            class="login-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-            <polyline points="10 17 15 12 10 7" />
-            <line x1="15" y1="12" x2="3" y2="12" />
-          </svg>
-        }
-      </button>
-    </div>
-  </nav>
+        <button
+          class="group flex cursor-pointer items-center justify-center rounded-[0.625rem] border border-[#d0d0d0] bg-white px-[0.6rem] py-[0.6rem] text-[1rem] font-medium text-black transition-all duration-300 hover:border-[#b0b0b0] dark:border-[#1f2937] dark:bg-[#111827] dark:text-white dark:hover:border-[#374151]"
+          (click)="themeService.toggleTheme()"
+          [title]="
+            themeService.isDarkMode()
+              ? ('header.switchToLightMode' | translate)
+              : ('header.switchToDarkMode' | translate)
+          "
+        >
+          @if (themeService.isDarkMode()) {
+            <svg
+              class="h-[1rem] w-[1rem] stroke-[2] transition-transform duration-300 group-hover:rotate-[20deg]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          } @else {
+            <svg
+              class="h-[1rem] w-[1rem] transition-transform duration-300 group-hover:rotate-[20deg]"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          }
+        </button>
+
+        <button
+          (click)="handleAuthClick()"
+          class="flex cursor-pointer items-center justify-center rounded-[0.625rem] border border-[#d0d0d0] bg-white px-[0.6rem] py-[0.6rem] text-[1rem] font-semibold text-black transition-all duration-300 hover:border-[rgba(0,0,0,0.2)] dark:border-[#1f2937] dark:bg-[#111827] dark:text-white dark:hover:border-[#374151]"
+          [title]="
+            isLoggedIn()
+              ? ('shared.myProfile' | translate)
+              : ('shared.login' | translate)
+          "
+        >
+          @if (isLoggedIn()) {
+            <svg
+              class="h-[1rem] w-[1rem]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          } @else {
+            <svg
+              class="h-[1rem] w-[1rem]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+          }
+        </button>
+      </div>
+    </nav>
+  </div>
 </header>

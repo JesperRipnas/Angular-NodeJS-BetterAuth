@@ -1,68 +1,75 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { AuthUser } from './interfaces/auth-user.interface';
-import { Role } from './enums/role.enum';
+import type { Request, Response } from 'express';
+import { AuthController } from './auth.controller.js';
+import { LoginDto } from './dto/login.dto.js';
+import { authDatabase } from './auth.js';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: jest.Mocked<AuthService>;
+  let querySpy: jest.SpiedFunction<typeof authDatabase.query>;
 
-  const mockAuthService = () => ({
-    validateUser: jest.fn(),
-  });
+  const mockResponse = (): Response =>
+    ({ setHeader: jest.fn() }) as unknown as Response;
+
+  const mockRequest = (): Request =>
+    ({ headers: { origin: 'http://localhost:4200' } }) as unknown as Request;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useFactory: mockAuthService }],
+      providers: [],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(
-      AuthService,
-    ) as jest.Mocked<AuthService>;
+    querySpy = jest.spyOn(authDatabase, 'query');
+
+    (global as unknown as { fetch: jest.Mock }).fetch = jest.fn();
   });
 
-  it('returns user payload on valid credentials', () => {
-    const dto: LoginDto = { username: 'admin', password: '1234' };
-    const user: AuthUser = {
-      username: 'admin',
-      email: 'admin@example.com',
-      firstName: 'Admin',
-      lastName: 'User',
-      birthDate: '1990-01-01',
-      role: Role.ADMIN,
-      verifiedEmail: true,
-      uuid: '0f2b4a2e-3b9a-4e0a-a98d-8f4f5d2f9a01',
-    };
-
-    authService.validateUser.mockReturnValue(user);
-
-    const authHeader =
-      'Basic ' +
-      Buffer.from(`${dto.username}:${dto.password}`).toString('base64');
-    const result = controller.login(authHeader);
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(authService.validateUser).toHaveBeenCalledWith(dto);
-    expect(result).toEqual({ success: true, user });
+  afterEach(() => {
+    querySpy.mockRestore();
+    jest.resetAllMocks();
   });
 
-  it('throws UnauthorizedException on invalid credentials', () => {
-    const dto: LoginDto = { username: 'wrong', password: 'creds' };
-    authService.validateUser.mockImplementation(() => {
-      throw new UnauthorizedException('Invalid credentials');
+  it('returns payload on valid credentials (username)', async () => {
+    const dto: LoginDto = { identifier: 'admin', password: '1234' };
+
+    querySpy.mockResolvedValue({
+      rows: [{ email: 'admin@example.com' }],
+      rowCount: 1,
+    } as never);
+
+    const payload = { success: true };
+
+    (global as unknown as { fetch: jest.Mock }).fetch.mockResolvedValue({
+      ok: true,
+      headers: { get: () => 'session=abc' },
+      json: () => Promise.resolve(payload),
     });
 
-    const authHeader =
-      'Basic ' +
-      Buffer.from(`${dto.username}:${dto.password}`).toString('base64');
+    const res = mockResponse();
+    const req = mockRequest();
 
-    expect(() => controller.login(authHeader)).toThrow(UnauthorizedException);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(authService.validateUser).toHaveBeenCalledWith(dto);
+    const setHeaderSpy = jest.spyOn(res, 'setHeader');
+
+    const result = await controller.login(dto, res, req);
+
+    expect(result).toEqual(payload);
+    expect(setHeaderSpy).toHaveBeenCalledWith('set-cookie', 'session=abc');
+    expect(querySpy).toHaveBeenCalled();
+  });
+
+  it('throws UnauthorizedException when username is not found', async () => {
+    const dto: LoginDto = { identifier: 'missing', password: '1234' };
+
+    querySpy.mockResolvedValue({ rows: [], rowCount: 0 } as never);
+
+    const res = mockResponse();
+    const req = mockRequest();
+
+    await expect(controller.login(dto, res, req)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 });
