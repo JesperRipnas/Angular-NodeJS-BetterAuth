@@ -299,6 +299,7 @@ export class UsersComponent implements OnInit {
     this.selectedVerification.set(['verified', 'unverified']);
     this.pageIndex.set(1);
     this.persistFilters();
+    this.searchTerm.set('');
   }
 
   exportUsers(): void {

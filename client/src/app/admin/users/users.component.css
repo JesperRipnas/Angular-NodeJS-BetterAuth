@@ -12,14 +12,14 @@
 /* Scale down entire users component by 20% for a more compact layout */
 :host .users-container {
   /* Primary: non-standard but widely supported */
-  zoom: 0.85;
+  zoom: 0.9;
 
   /* Fallbacks for browsers that don't support zoom. Use centered transform origin so the panel appears centered. */
-  -webkit-transform: scale(0.85);
+  -webkit-transform: scale(0.9);
   -webkit-transform-origin: 50% 0;
-  -moz-transform: scale(0.85);
+  -moz-transform: scale(0.9);
   -moz-transform-origin: 50% 0;
-  transform: scale(0.85);
+  transform: scale(0.9);
   transform-origin: 50% 0;
 }
 
@@ -639,9 +639,9 @@ table {
 }
 
 .col-role {
-  width: 7.5rem;
-  min-width: 7.5rem;
-  max-width: 7.5rem;
+  width: 7rem;
+  min-width: 7rem;
+  max-width: 7rem;
 }
 
 .col-username {
@@ -768,7 +768,7 @@ th {
 }
 
 td {
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid #e5e7eb;
   color: #374151;
 }
